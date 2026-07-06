@@ -86,15 +86,17 @@ def register():
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
-    username = data.get('username')
+    input_val = data.get('username') # HTML yahan username ya ID kuch bhi bhej sakta hai
     password = data.get('password')
     
     try:
-        response = supabase.table('users').select('*').eq('username', username).execute()
+        # Supabase me check karega ki input_val Username hai YA User_ID hai
+        response = supabase.table('users').select('*').or_(f"username.eq.{input_val},user_id.eq.{input_val}").execute()
+        
         if len(response.data) > 0 and response.data[0]['password'] == password:
             return jsonify({"message": "Login successful", "user": response.data[0]}), 200
         else:
-            return jsonify({"error": "Invalid username or password"}), 401
+            return jsonify({"error": "Invalid username/ID or password"}), 401
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
