@@ -149,3 +149,21 @@ def update_delete_lead(lead_id):
             return jsonify({"message": "Lead deleted successfully!"}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+
+# ----------------------------------------------------
+# 6. GET ALL USERS (Sirf Admin Ke Liye)
+# ----------------------------------------------------
+@app.route('/api/users', methods=['GET'])
+def get_users():
+    owner = request.args.get('owner')
+    # अगर लॉगिन करने वाला यूजर 'admin' नहीं है, तो उसे डेटा मत दो
+    if owner != 'admin':
+        return jsonify({"error": "Unauthorized"}), 401
+        
+    try:
+        # Supabase से सारे यूजर्स की लिस्ट लाओ
+        response = supabase.table('users').select('*').execute()
+        return jsonify(response.data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
