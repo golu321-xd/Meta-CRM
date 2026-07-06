@@ -34,13 +34,6 @@ def home():
     return render_template('Meta.html')
 
 # ----------------------------------------------------
-# MAIN HOME ROUTE
-# ----------------------------------------------------
-@app.route('/', methods=['GET'])
-def home():
-    return jsonify({"message": "Meta CRM Backend is live on Render! 24/7 Active."})
-
-# ----------------------------------------------------
 # 2. SELF-PING MECHANISM
 # ----------------------------------------------------
 def keep_awake():
