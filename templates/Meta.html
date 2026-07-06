@@ -428,6 +428,20 @@
       flex-shrink: 0;
     }
     button.btn svg.icon, .nav-menu button svg.icon, .bottom-nav button svg.icon { width: 1.05em; height: 1.05em; }
+        /* ---------- OFFERS CATALOG ---------- */
+    .offer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; padding-bottom: 40px; }
+    .offer-card { background: var(--bg-card); border-radius: 24px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.3s ease; display: flex; flex-direction: column; }
+    .offer-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--primary-soft); }
+    .offer-banner { width: 100%; height: 220px; object-fit: cover; background: rgba(0,0,0,0.05); }
+    .offer-details { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .offer-title { font-family: var(--font-display); font-weight: 800; font-size: 1rem; margin-bottom: 16px; line-height: 1.3; color: var(--text-main); }
+    .price-box { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; background: var(--bg-main); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border); }
+    .price-mrp { display: flex; flex-direction: column; }
+    .price-mrp span { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+    .price-mrp del { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); }
+    .price-offer { display: flex; flex-direction: column; text-align: right; }
+    .price-offer span { font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--success); }
+    .price-offer strong { font-size: 1.4rem; font-weight: 800; color: var(--text-main); font-family: var(--font-display); }
   </style>
 </head>
 <body>
@@ -637,6 +651,7 @@
         <button id="tab-btn-pipeline" class="clickable" onclick="switchTab('pipeline')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/></svg> Pipeline Board</button>
         <button id="tab-btn-alerts" class="clickable" onclick="switchTab('alerts')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Alerts & Tasks <span class="nav-badge hidden" id="alert-nav-badge">0</span></button>
         <button id="tab-btn-admin" class="clickable" onclick="switchTab('admin')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V5l-8-3Z"/><path d="M12 2v19"/></svg> Admin Panel</button>
+        <button id="tab-btn-offers" class="clickable" onclick="switchTab('offers')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> Offers Catalog</button>
       </nav>
       <div class="sidebar-footer">
         <div class="theme-toggle-row">
@@ -877,8 +892,23 @@
             </div>
           </div>
         </div>
-      </main>
 
+                <!-- OFFERS CATALOG -->
+        <div id="view-offers" class="hidden">
+          <div class="table-header-actions" style="margin-bottom: 24px;">
+            <div>
+              <h2 style="margin-bottom: 4px;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> Ray-Ban Meta Catalog</h2>
+              <div class="section-sub">Exclusive pricing and details sourced directly from the database.</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="fetchOffers()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg> Refresh Prices</button>
+          </div>
+          <div id="offersGrid" class="offer-grid">
+             <!-- JavaScript se data yahan aayega -->
+          </div>
+        </div>
+
+      </main>
+       
       <button class="fab clickable" onclick="switchTab('leads'); setTimeout(()=>document.getElementById('customerName').focus(),300);" title="Quick add lead"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
 
       <div class="bottom-nav">
@@ -887,6 +917,7 @@
         <button id="mob-btn-pipeline" class="clickable" onclick="switchTab('pipeline')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M15 3v18"/></svg><span>Board</span></button>
         <button id="mob-btn-alerts" class="clickable" onclick="switchTab('alerts')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span>Alerts</span></button>
         <button id="mob-btn-admin" class="clickable" onclick="switchTab('admin')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V5l-8-3Z"/><path d="M12 2v19"/></svg><span>Admin</span></button>
+        <button id="mob-btn-offers" class="clickable" onclick="switchTab('offers')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span>Offers</span></button>
       </div>
 
     </div>
@@ -1324,7 +1355,9 @@
        TAB SWITCHER
     ========================================================== */
     function switchTab(tabName) {
-      const tabs = ['dashboard', 'leads', 'pipeline', 'alerts', 'admin'];
+      const tabs = ['dashboard', 'leads', 'pipeline', 'alerts', 'admin', 'offers'];
+      if(tabName === 'offers') { fetchOffers(); }
+
       tabs.forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
         document.getElementById(`tab-btn-${t}`).classList.remove('active');
@@ -2133,6 +2166,68 @@
       else if (e.key === 'Enter') { e.preventDefault(); cmdkRun(cmdkSelectedIndex); }
       else if (e.key === 'Escape') { closeCmdk(); }
     }
+
+      // ==========================================================
+    // RAY-BAN META OFFERS LOGIC
+    // ==========================================================
+    const offerImages = {
+        1: "YOUR_IMAGE_LINK_HERE_1",
+        2: "YOUR_IMAGE_LINK_HERE_2",
+        3: "YOUR_IMAGE_LINK_HERE_3",
+        4: "YOUR_IMAGE_LINK_HERE_4",
+        5: "YOUR_IMAGE_LINK_HERE_5",
+        6: "YOUR_IMAGE_LINK_HERE_6",
+        7: "YOUR_IMAGE_LINK_HERE_7",
+        8: "YOUR_IMAGE_LINK_HERE_8",
+        9: "YOUR_IMAGE_LINK_HERE_9",
+        10: "YOUR_IMAGE_LINK_HERE_10",
+        11: "YOUR_IMAGE_LINK_HERE_11",
+        12: "YOUR_IMAGE_LINK_HERE_12",
+        13: "YOUR_IMAGE_LINK_HERE_13"
+    };
+
+    async function fetchOffers() {
+        try {
+            document.getElementById('offersGrid').innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><div class="boot-ring" style="margin: 0 auto 16px; border-top-color: var(--primary);"></div><p>Syncing live offers from Supabase...</p></div>`;
+            
+            let res = await fetch(`${API_BASE_URL}/offers`);
+            if(res.ok) {
+                let offersData = await res.json();
+                const grid = document.getElementById('offersGrid');
+                
+                grid.innerHTML = offersData.map(offer => {
+                    let imgUrl = offerImages[offer.id] && offerImages[offer.id] !== `YOUR_IMAGE_LINK_HERE_${offer.id}` 
+                                 ? offerImages[offer.id] 
+                                 : `https://via.placeholder.com/600x400/111c34/ffffff?text=${encodeURIComponent(offer.model_name.split(' ')[3] || 'Ray-Ban')}`;
+                    
+                    let isDiscounted = offer.offer_price < offer.mrp;
+                    let offerTag = isDiscounted ? 'SPECIAL OFFER' : 'BEST PRICE';
+                    let offerColor = isDiscounted ? 'var(--success)' : 'var(--primary)';
+
+                    return `
+                    <div class="offer-card">
+                        <img src="${imgUrl}" alt="${offer.model_name}" class="offer-banner">
+                        <div class="offer-details">
+                            <div class="offer-title">${offer.model_name}</div>
+                            <div class="price-box">
+                                <div class="price-mrp">
+                                    <span>MRP</span>
+                                    <del>₹${offer.mrp.toLocaleString()}</del>
+                                </div>
+                                <div class="price-offer">
+                                    <span style="color: ${offerColor};">${offerTag}</span>
+                                    <strong>₹${offer.offer_price.toLocaleString()}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        } catch(e) {
+            document.getElementById('offersGrid').innerHTML = `<div class="empty-state" style="grid-column: 1/-1; color: var(--danger);"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="font-size:3rem; margin-bottom:10px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><p>Failed to load offers from server.</p></div>`;
+        }
+    }
+
   </script>
 </body>
 </html>
