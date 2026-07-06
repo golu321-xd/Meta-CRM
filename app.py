@@ -54,3 +54,86 @@ def keep_awake():
 threading.Thread(target=keep_awake, daemon=True).start()
 
 # Render par gunicorn handle karega, isliye app.run() hata diya hai.
+
+
+# ----------------------------------------------------
+# 3. AUTHENTICATION (Login & Register)
+# ----------------------------------------------------
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    user_id = data.get('userId')
+    
+    try:
+        # Check if user already exists
+        existing_user = supabase.table('users').select('*').eq('username', username).execute()
+        if len(existing_user.data) > 0:
+            return jsonify({"error": "User already exists"}), 400
+            
+        # Create new user
+        new_user = {
+            "username": username,
+            "password": password,
+            "user_id": user_id
+        }
+        supabase.table('users').insert(new_user).execute()
+        return jsonify({"message": "Account created successfully!"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    
+    try:
+        response = supabase.table('users').select('*').eq('username', username).execute()
+        if len(response.data) > 0 and response.data[0]['password'] == password:
+            return jsonify({"message": "Login successful", "user": response.data[0]}), 200
+        else:
+            return jsonify({"error": "Invalid username or password"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ----------------------------------------------------
+# 4. LEADS MANAGEMENT (Add & Get Leads)
+# ----------------------------------------------------
+@app.route('/api/leads', methods=['GET', 'POST'])
+def manage_leads():
+    if request.method == 'POST':
+        # Naya lead add karna
+        data = request.json
+        try:
+            supabase.table('leads').insert(data).execute()
+            return jsonify({"message": "Lead added successfully!"}), 201
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+            
+    elif request.method == 'GET':
+        # Database se leads fetch karna
+        owner = request.args.get('owner')
+        try:
+            if owner and owner != 'admin':
+                # Sirf us user ke leads dikhao jo login hai
+                response = supabase.table('leads').select('*').eq('owner', owner).execute()
+            else:
+                # Agar admin hai toh sabke leads dikhao
+                response = supabase.table('leads').select('*').execute()
+            return jsonify(response.data), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+# ----------------------------------------------------
+# 5. UPDATE LEAD (Won, Lost, Edit)
+# ----------------------------------------------------
+@app.route('/api/leads/<lead_id>', methods=['PUT'])
+def update_lead(lead_id):
+    data = request.json
+    try:
+        supabase.table('leads').update(data).eq('id', lead_id).execute()
+        return jsonify({"message": "Lead updated successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
