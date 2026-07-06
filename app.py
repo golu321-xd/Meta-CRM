@@ -164,4 +164,17 @@ def get_users():
         return jsonify(response.data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ----------------------------------------------------
+# 7. GET OFFERS (For Ray-Ban Meta Catalog)
+# ----------------------------------------------------
+@app.route('/api/offers', methods=['GET'])
+def get_offers():
+    try:
+        # Supabase से id के हिसाब से लाइन से डेटा मँगवाओ
+        response = supabase.table('meta_offers').select('*').order('id').execute()
+        return jsonify(response.data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
         
