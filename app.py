@@ -101,11 +101,25 @@ def login():
         return jsonify({"error": str(e)}), 500
 
 # ----------------------------------------------------
-# 4. LEADS MANAGEMENT (Add & Get Leads)
+# 4. MANAGE LEADS (Add & Fetch)
 # ----------------------------------------------------
 @app.route('/api/leads', methods=['GET', 'POST'])
 def manage_leads():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        # Database se leads fetch karna
+        owner = request.args.get('owner')
+        try:
+            # Agar admin hai toh sabke leads dikhao
+            if owner == 'admin':
+                response = supabase.table('leads').select('*').execute()
+            # Sirf us user ke leads dikhao jo login hai
+            else:
+                response = supabase.table('leads').select('*').eq('owner', owner).execute()
+            return jsonify(response.data), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    elif request.method == 'POST':
         # Naya lead add karna
         data = request.json
         try:
@@ -113,29 +127,25 @@ def manage_leads():
             return jsonify({"message": "Lead added successfully!"}), 201
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-            
-    elif request.method == 'GET':
-        # Database se leads fetch karna
-        owner = request.args.get('owner')
-        try:
-            if owner and owner != 'admin':
-                # Sirf us user ke leads dikhao jo login hai
-                response = supabase.table('leads').select('*').eq('owner', owner).execute()
-            else:
-                # Agar admin hai toh sabke leads dikhao
-                response = supabase.table('leads').select('*').execute()
-            return jsonify(response.data), 200
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
 
 # ----------------------------------------------------
-# 5. UPDATE LEAD (Won, Lost, Edit)
+# 5. UPDATE & DELETE LEAD (Won, Lost, Edit, Delete)
 # ----------------------------------------------------
-@app.route('/api/leads/<lead_id>', methods=['PUT'])
-def update_lead(lead_id):
-    data = request.json
-    try:
-        supabase.table('leads').update(data).eq('id', lead_id).execute()
-        return jsonify({"message": "Lead updated successfully!"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+@app.route('/api/leads/<lead_id>', methods=['PUT', 'DELETE'])
+def update_delete_lead(lead_id):
+    if request.method == 'PUT':
+        # Lead ko Edit, Won, ya Lost mark karna
+        data = request.json
+        try:
+            supabase.table('leads').update(data).eq('id', lead_id).execute()
+            return jsonify({"message": "Lead updated successfully!"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+            
+    elif request.method == 'DELETE':
+        # Lead ko permanently delete karna
+        try:
+            supabase.table('leads').delete().eq('id', lead_id).execute()
+            return jsonify({"message": "Lead deleted successfully!"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
