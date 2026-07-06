@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from supabase import create_client, Client
 import os
@@ -27,6 +27,11 @@ else:
 @app.route('/ping', methods=['GET'])
 def ping():
     return "Pong! Server is awake.", 200
+
+# यह रूट होमपेज पर आपकी HTML वेबसाइट दिखाएगा
+@app.route('/')
+def home():
+    return render_template('Meta.html')
 
 # ----------------------------------------------------
 # MAIN HOME ROUTE
