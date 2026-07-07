@@ -443,24 +443,23 @@
     .price-offer span { font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--success); }
     .price-offer strong { font-size: 1.4rem; font-weight: 800; color: var(--text-main); font-family: var(--font-display); }
 
-        /* ---------- PREMIUM OFFER BANNER ---------- */
-    .premium-banner-wrapper { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 24px; animation: fadeIn 0.4s ease; }
-    .premium-banner-header { background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 12px 20px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
-    [data-theme="dark"] .premium-banner-header { background: linear-gradient(90deg, #0f172a 0%, #1d4ed8 100%); }
-    .premium-banner-header .wow-badge { background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-style: italic; font-weight: 900; font-size: 0.75rem; letter-spacing: 0.5px; }
+    /* ---------- PREMIUM OFFER BANNER (LUXURY GOLD) ---------- */
+    .premium-banner-wrapper { background: linear-gradient(145deg, #111111, #000000); border-radius: 16px; border: 1px solid #c5a059; box-shadow: 0 4px 20px rgba(197, 160, 89, 0.15); overflow: hidden; margin-bottom: 24px; animation: fadeIn 0.4s ease; }
+    .premium-banner-header { background: linear-gradient(90deg, #2a220b 0%, #000000 100%); border-bottom: 1px solid rgba(197, 160, 89, 0.3); color: #f3e5ab; padding: 12px 20px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
+    .wow-badge { background: linear-gradient(45deg, #c5a059, #f9df9f); color: #000000; padding: 2px 8px; border-radius: 4px; font-style: italic; font-weight: 900; font-size: 0.75rem; letter-spacing: 0.5px; }
     .premium-banner-body { display: flex; position: relative; }
     .banner-half { flex: 1; padding: 20px 24px; display: flex; flex-direction: column; justify-content: center; }
-    .banner-left { border-right: 1px dashed var(--border); background: rgba(59, 130, 246, 0.03); }
-    .banner-or { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 2; }
-    .banner-price { font-size: 2.2rem; font-weight: 800; color: var(--text-main); font-family: var(--font-display); line-height: 1.1; margin-bottom: 4px; }
-    .banner-subtext { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
-    .banner-card-badge { display: inline-block; background: #fef08a; color: #854d0e; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; margin-bottom: 12px; width: fit-content; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-    [data-theme="dark"] .banner-card-badge { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
-    .banner-bank-name { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+    .banner-left { border-right: 1px dashed rgba(197, 160, 89, 0.3); background: transparent; }
+    .banner-or { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111111; color: #c5a059; border: 1px solid #c5a059; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+    .banner-price { font-size: 2.2rem; font-weight: 900; color: #f9df9f; line-height: 1.1; margin-bottom: 4px; }
+    .banner-subtext { font-size: 0.85rem; color: #a3a3a3; font-weight: 500; margin-top: 4px; }
+    .banner-card-badge { display: inline-block; background: rgba(197, 160, 89, 0.15); color: #f9df9f; border: 1px solid #c5a059; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; margin-bottom: 12px; width: fit-content; }
+    .banner-bank-name { font-size: 1.1rem; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
+    .btn-gold { background: linear-gradient(45deg, #c5a059, #f9df9f); color: #000000; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer; border: none; margin-top: 12px; width: fit-content; }
     
     @media (max-width: 768px) {
       .premium-banner-body { flex-direction: column; }
-      .banner-left { border-right: none; border-bottom: 1px dashed var(--border); }
+      .banner-left { border-right: none; border-bottom: 1px dashed rgba(197, 160, 89, 0.3); }
     }
   </style>
 </head>
@@ -2220,14 +2219,14 @@
                 document.getElementById('globalOfferContainer').innerHTML = `
                 <div class="premium-banner-wrapper">
                     <div class="premium-banner-header">
-                        <span class="wow-badge">WOW! DEAL</span>
+                        <span class="wow-badge">WOW DEAL</span>
                         <span>Apply offers for maximum savings</span>
                     </div>
                     <div class="premium-banner-body">
                         <div class="banner-half banner-left">
                             <div class="banner-price">${banner.croma_price}</div>
-                            <div class="banner-subtext" style="color:var(--text-main); font-weight:700;">${banner.croma_heading}</div>
-                            <div class="banner-subtext" style="margin-top:4px;">${banner.croma_subtext}</div>
+                            <div class="banner-subtext" style="color:#f9df9f; font-weight:700;">${banner.croma_heading}</div>
+                            <div class="banner-subtext">${banner.croma_subtext}</div>
                         </div>
                         
                         <div class="banner-or">OR</div>
@@ -2236,10 +2235,11 @@
                             <div class="banner-card-badge">${banner.card_highlight}</div>
                             <div class="banner-bank-name">${banner.card_heading}</div>
                             <div class="banner-subtext">${banner.card_subtext}</div>
-                            <button class="btn btn-sm" style="margin-top:12px; width: fit-content;">Apply Now</button>
+                            <button class="btn-gold">Apply Now</button>
                         </div>
                     </div>
                 </div>`;
+
             }
         } catch(e) {
             console.error("Failed to load global banner", e);
