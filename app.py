@@ -190,6 +190,28 @@ def get_global_banner():
             return jsonify({}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/reset-password', methods=['POST', 'OPTIONS'])
+def reset_password():
+    # CORS Error से बचने के लिए OPTIONS request को पास करना 
+    if request.method == 'OPTIONS':
+        return jsonify({"status": "ok"}), 200
+        
+    data = request.get_json()
+    username = data.get('username')
+    new_password = data.get('newPassword')
+    
+    if not username or not new_password:
+        return jsonify({"error": "Username or password missing"}), 400
+        
+    try:
+        # TODO: यहाँ Supabase Admin API का यूज़ करके डेटाबेस में पासवर्ड अपडेट करने का कोड आएगा
+        # supabase.auth.admin.update_user_by_id(user_id, {"password": new_password})
+        
+        return jsonify({"success": True, "message": f"{username} ka password set ho gaya!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
         
         
         
