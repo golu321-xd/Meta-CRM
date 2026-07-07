@@ -1427,36 +1427,33 @@
         return;
       }
       
-            // ==========================================
-      // GLOBAL DUPLICATE LEAD PREVENTION (FIXED)
+                  // ==========================================
+      // GLOBAL DUPLICATE LEAD PREVENTION (SUPER FIXED)
       // ==========================================
       try {
-        // डेटाबेस से सभी यूज़र्स का डेटा मंगा कर चेक करेंगे (Global Check)
-        let checkRes = await fetch(`${API_BASE_URL}/leads`); 
+        let checkRes = await fetch(`${API_BASE_URL}/leads?owner=admin`); 
         if (checkRes.ok) {
           let globalLeads = await checkRes.json();
           let isDuplicate = globalLeads.find(l => l.customerContact === contact);
           
           if (isDuplicate) {
-            errEl.innerText = `Already assigned to ${isDuplicate.owner} (Status: ${isDuplicate.status})`;
+            errEl.innerText = `Assigned to ${isDuplicate.owner} (Status: ${isDuplicate.status})`;
             errEl.style.display = 'block';
             contactField.classList.add('invalid');
             
-            // अगर खुद की लीड है या किसी और की, उस हिसाब से अलग मैसेज
             let msg = isDuplicate.owner === currentUser 
                 ? `You already saved this number earlier.` 
                 : `Lead blocked! This number is already assigned to ${isDuplicate.owner}.`;
                 
             showToast('error', 'Duplicate Entry', msg);
             contactField.focus();
-            return; // कोड को यहीं रोक देगा, डेटाबेस में सेव नहीं होने देगा
+            return;
           }
         }
       } catch (err) {
         console.log("Global duplicate check failed", err);
       }
       // ==========================================
-
 
       const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
       const now = new Date().toISOString();
