@@ -442,6 +442,26 @@
     .price-offer { display: flex; flex-direction: column; text-align: right; }
     .price-offer span { font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--success); }
     .price-offer strong { font-size: 1.4rem; font-weight: 800; color: var(--text-main); font-family: var(--font-display); }
+
+        /* ---------- PREMIUM OFFER BANNER ---------- */
+    .premium-banner-wrapper { background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 24px; animation: fadeIn 0.4s ease; }
+    .premium-banner-header { background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 12px 20px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
+    [data-theme="dark"] .premium-banner-header { background: linear-gradient(90deg, #0f172a 0%, #1d4ed8 100%); }
+    .premium-banner-header .wow-badge { background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-style: italic; font-weight: 900; font-size: 0.75rem; letter-spacing: 0.5px; }
+    .premium-banner-body { display: flex; position: relative; }
+    .banner-half { flex: 1; padding: 20px 24px; display: flex; flex-direction: column; justify-content: center; }
+    .banner-left { border-right: 1px dashed var(--border); background: rgba(59, 130, 246, 0.03); }
+    .banner-or { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); color: var(--text-muted); border: 1px solid var(--border); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 2; }
+    .banner-price { font-size: 2.2rem; font-weight: 800; color: var(--text-main); font-family: var(--font-display); line-height: 1.1; margin-bottom: 4px; }
+    .banner-subtext { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+    .banner-card-badge { display: inline-block; background: #fef08a; color: #854d0e; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; margin-bottom: 12px; width: fit-content; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    [data-theme="dark"] .banner-card-badge { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
+    .banner-bank-name { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+    
+    @media (max-width: 768px) {
+      .premium-banner-body { flex-direction: column; }
+      .banner-left { border-right: none; border-bottom: 1px dashed var(--border); }
+    }
   </style>
 </head>
 <body>
@@ -902,6 +922,8 @@
             </div>
             <button class="btn btn-secondary btn-sm" onclick="fetchOffers()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg> Refresh Prices</button>
           </div>
+             <!-- GLOBAL BANNER YAHAN LOAD HOGA -->
+          <div id="globalOfferContainer"></div>
           <div id="offersGrid" class="offer-grid">
              <!-- JavaScript se data yahan aayega -->
           </div>
@@ -1356,7 +1378,7 @@
     ========================================================== */
     function switchTab(tabName) {
       const tabs = ['dashboard', 'leads', 'pipeline', 'alerts', 'admin', 'offers'];
-      if(tabName === 'offers') { fetchOffers(); }
+      if(tabName === 'offers') { fetchGlobalBanner(); fetchOffers(); }
 
       tabs.forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
@@ -2186,7 +2208,44 @@
         13: "/static/sapphire.jpg"
     };
 
+    async function fetchGlobalBanner() {
+        try {
+            let res = await fetch(`${API_BASE_URL}/global-banner`);
+            if(res.ok) {
+                let banner = await res.json();
+                
+                // Agar data khali hai toh kuch mat dikhao
+                if(!banner.croma_price) return; 
 
+                document.getElementById('globalOfferContainer').innerHTML = `
+                <div class="premium-banner-wrapper">
+                    <div class="premium-banner-header">
+                        <span class="wow-badge">WOW! DEAL</span>
+                        <span>Apply offers for maximum savings</span>
+                    </div>
+                    <div class="premium-banner-body">
+                        <div class="banner-half banner-left">
+                            <div class="banner-price">${banner.croma_price}</div>
+                            <div class="banner-subtext" style="color:var(--text-main); font-weight:700;">${banner.croma_heading}</div>
+                            <div class="banner-subtext" style="margin-top:4px;">${banner.croma_subtext}</div>
+                        </div>
+                        
+                        <div class="banner-or">OR</div>
+                        
+                        <div class="banner-half">
+                            <div class="banner-card-badge">${banner.card_highlight}</div>
+                            <div class="banner-bank-name">${banner.card_heading}</div>
+                            <div class="banner-subtext">${banner.card_subtext}</div>
+                            <button class="btn btn-sm" style="margin-top:12px; width: fit-content;">Apply Now</button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        } catch(e) {
+            console.error("Failed to load global banner", e);
+        }
+        }
+    
     async function fetchOffers() {
         try {
             document.getElementById('offersGrid').innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><div class="boot-ring" style="margin: 0 auto 16px; border-top-color: var(--primary);"></div><p>Syncing live offers from Supabase...</p></div>`;
