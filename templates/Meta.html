@@ -1426,6 +1426,20 @@
         showToast('warning', 'Invalid phone number', 'Please check the contact number format.');
         return;
       }
+      
+      // ==========================================
+      // DUPLICATE LEAD PREVENTION (NEW LOGIC)
+      // ==========================================
+      const isDuplicate = allLeads.find(l => l.customerContact === contact);
+      if (isDuplicate) {
+        errEl.innerText = `This number already exists in your ${isDuplicate.status} leads!`;
+        errEl.style.display = 'block';
+        contactField.classList.add('invalid');
+        showToast('error', 'Duplicate Entry', `Lead blocked! You already saved this number on ${new Date(isDuplicate.createdAt).toLocaleDateString()}.`);
+        contactField.focus(); // यूज़र का फोकस वापस नंबर पर लाएगा
+        return; // यहीं से कोड रुक जाएगा, डेटाबेस में सेव नहीं होगा
+      }
+      // =========================================
 
       const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
       const now = new Date().toISOString();
