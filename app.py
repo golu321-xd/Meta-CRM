@@ -30,7 +30,7 @@ def ping():
 
 # यह रूट होमपेज पर आपकी HTML वेबसाइट दिखाएगा
 @app.route('/')
-def home():
+def serve_frontend():
     return render_template('Meta.html')
 
 # ----------------------------------------------------
