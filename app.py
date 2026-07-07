@@ -176,5 +176,20 @@ def get_offers():
         return jsonify(response.data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ----------------------------------------------------
+# 8. GET GLOBAL BANNER (For Offers Header)
+# ----------------------------------------------------
+@app.route('/api/global-banner', methods=['GET'])
+def get_global_banner():
+    try:
+        response = supabase.table('global_banners').select('*').eq('id', 1).execute()
+        if len(response.data) > 0:
+            return jsonify(response.data[0]), 200
+        else:
+            return jsonify({}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
         
         
