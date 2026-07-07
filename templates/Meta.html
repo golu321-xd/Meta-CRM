@@ -1441,24 +1441,18 @@
 
     async function requestPasswordReset() {
       const input = document.getElementById('forgot-user').value.trim();
-      
-      if (!input) { 
-        showToast('warning', 'Missing Details', 'Please enter your Username or ID.'); 
-        return; 
+      if (!input) { showToast('warning', 'Missing Details', 'Please enter your Username or ID.'); return; }
+
+      // रिक्वेस्ट को एडमिन के लिए सेव करेगा
+      let requests = JSON.parse(localStorage.getItem('resetRequests') || '[]');
+      if (!requests.includes(input)) {
+          requests.push(input);
+          localStorage.setItem('resetRequests', JSON.stringify(requests));
       }
-      
-      // Cloud API / Supabase Logic Simulation
-      try {
-        // (Agar future mein backend pe forgot password ki API banayenge toh yahan fetch call aayegi)
-        
-        // Abhi ke liye UI ko direct success dikhayenge taaki invalid wala error na aaye
-        showToast('success', 'Request sent', 'Admin will process your reset shortly.');
-        toggleAuth('login');
-        document.getElementById('forgot-user').value = '';
-        
-      } catch(err) {
-        showToast('error', 'Network Error', 'Could not send request.');
-      }
+
+      showToast('success', 'Request sent', 'Admin will process your reset shortly.');
+      toggleAuth('login');
+      document.getElementById('forgot-user').value = '';
     }
 
     function uploadProfilePicture(event) {
@@ -2334,10 +2328,22 @@
         const overdue = allLeads.filter(l => l.status === 'Open' && new Date(l.followUpTime) < new Date()).length;
         document.getElementById('admin-stat-overdue').innerText = overdue;
 
-        // Reset Requests (Ab Cloud Auth se handle hoga)
+        // Reset Requests (अब टेबल में रिक्वेस्ट शो होगी)
         const resetContainer = document.getElementById('adminResetContainer');
-        resetContainer.innerHTML = `<tr><td colspan="3"><div class="empty-state" style="padding:20px;"><p style="font-size:0.85rem;">Password resets are handled via Cloud Auth.</p></div></td></tr>`;
-
+        let resetReqs = JSON.parse(localStorage.getItem('resetRequests') || '[]');
+        
+        if (resetReqs.length === 0) {
+            resetContainer.innerHTML = `<tr><td colspan="3"><div class="empty-state" style="padding:20px;"><p style="font-size:0.85rem;">No pending password reset requests.</p></div></td></tr>`;
+        } else {
+            resetContainer.innerHTML = resetReqs.map(user => `
+              <tr>
+                <td><strong>${user}</strong></td>
+                <td><input type="password" id="reset-pass-${user}" placeholder="New Password" style="margin:0; padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.1);"></td>
+                <td><button class="btn btn-warning btn-sm clickable" onclick="adminChangePassword('${user}')">Mark Resolved</button></td>
+              </tr>
+            `).join('');
+        }
+        
         // 1. User Directory Table Update (Seedha Supabase database ke data se)
         const usersContainer = document.getElementById('adminUsersContainer');
         usersContainer.innerHTML = dbUsers.map(u => `
@@ -2382,13 +2388,39 @@
       document.getElementById('admin-pass-key').value = "";
     }
 
-    function adminChangePassword(username) {
+    async function adminChangePassword(username) {
       const newPassword = document.getElementById('reset-pass-' + username).value.trim();
-      if (!newPassword) { showToast('warning', 'Enter password', 'Please type a new password first.'); return; }
-      users[username].password = newPassword; users[username].resetRequested = false; saveUsers();
-      showToast('success', 'Password updated', `${username}'s password has been reset.`);
-      showAdminPanel();
+      if (!newPassword) { 
+          showToast('warning', 'Enter password', 'Please type a new password first.'); 
+          return; 
+      }
+      
+      try {
+        // 1. Cloud Backend (Render API) ko naya password update karne ki request bhejna
+        let response = await fetch(`${API_BASE_URL}/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: username, newPassword: newPassword })
+        });
+        
+        if(response.ok) {
+            // 2. Agar database mein password sach mein badal gaya, toh request list se hatao
+            let requests = JSON.parse(localStorage.getItem('resetRequests') || '[]');
+            requests = requests.filter(u => u !== username);
+            localStorage.setItem('resetRequests', JSON.stringify(requests));
+            
+            showToast('success', 'Password Updated!', `${username} ka naya password database mein set ho gaya hai!`);
+            showAdminPanel(); // Table refresh karega
+        } else {
+            let data = await response.json();
+            showToast('error', 'Update Failed', data.error || 'Backend par password reset nahi ho paaya.');
+        }
+      } catch (err) {
+        showToast('error', 'Network Error', 'Server (Render) se connect nahi ho paaya.');
+      }
     }
+
+
 
     /* ==========================================================
        COMMAND PALETTE (Ctrl+K quick search)
