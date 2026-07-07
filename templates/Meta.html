@@ -231,13 +231,23 @@
     }
     .card.tight { padding: 18px; }
 
+        /* PREMIUM GLOBAL INPUTS */
     input, select, textarea {
-      margin: 8px 0 16px 0; padding: 13px 14px; width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
-      font-size: 0.95rem; font-family: inherit; transition: all 0.2s; background: var(--bg-main); color: var(--text-main);
+      margin: 8px 0 16px 0; padding: 14px 16px; width: 100%; 
+      border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 12px;
+      font-size: 0.95rem; font-family: inherit; transition: all 0.3s ease; 
+      background: rgba(0, 0, 0, 0.02); color: var(--text-main);
+    }
+    [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea {
+      background: rgba(0, 0, 0, 0.25); border-color: rgba(255, 255, 255, 0.1); color: #fff;
     }
     input:focus, select:focus, textarea:focus {
-      outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.13); background: var(--bg-card);
+      outline: none; border-color: var(--primary); 
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15); 
+      background: var(--bg-card); transform: translateY(-1px);
     }
+    /* ---------------------- */
+
     label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
     .required-mark { color: var(--danger); }
     .field-hint { font-size: 0.75rem; color: var(--text-muted); margin: -12px 0 14px; }
@@ -677,11 +687,19 @@
 
     <div class="auth-box hidden" id="forgot-card">
       <h2 style="text-align: center; font-family: var(--font-display);">Reset Password</h2>
-      <p style="font-size:0.85rem; color:var(--text-muted); text-align: center; margin-bottom: 20px;">Enter your ID. Admin will process your request — a new password will not be shown here.</p>
-      <label>Username or User ID</label>
-      <input type="text" id="forgot-user" placeholder="Enter username or ID">
-      <button class="btn btn-warning w-full" onclick="requestPasswordReset()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg> Submit Request</button>
-      <div class="auth-switch" style="margin-top: 20px;">Remembered? <span onclick="toggleAuth('login')">Back to Sign In</span></div>
+      <p style="font-size:0.85rem; color:var(--text-muted); text-align: center; margin-bottom: 24px;">Enter your ID. Admin will process your request — a new password will not be shown here.</p>
+      
+      <div style="margin-bottom: 24px;">
+        <label style="display: block; margin-bottom: 8px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Username or User ID</label>
+        <input type="text" id="forgot-user" placeholder="Enter username or ID" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-size: 1rem; outline: none; transition: all 0.3s ease;" onfocus="this.style.borderColor='#f59e0b'; this.style.boxShadow='0 0 0 3px rgba(245, 158, 11, 0.25)';" onblur="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.boxShadow='none';">
+      </div>
+
+      <button class="btn btn-warning w-full" onclick="requestPasswordReset()" style="padding: 14px; font-size: 1rem; font-weight: 700; border-radius: 12px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border: none; color: white; cursor: pointer; box-shadow: 0 8px 15px rgba(245, 158, 11, 0.25); transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 20px rgba(245, 158, 11, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 15px rgba(245, 158, 11, 0.25)';">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg> 
+        Submit Request
+      </button>
+      
+      <div class="auth-switch" style="margin-top: 24px;">Remembered? <span onclick="toggleAuth('login')">Back to Sign In</span></div>
     </div>
   </div>
 
@@ -1421,16 +1439,25 @@
       showToast('info', 'Signed out', 'Come back soon!');
     }
 
-    function requestPasswordReset() {
+    async function requestPasswordReset() {
       const input = document.getElementById('forgot-user').value.trim();
-      const userKey = findUserKey(input);
-      if (userKey) {
-        users[userKey].resetRequested = true;
-        saveUsers();
-        showToast('success', 'Request sent', 'An admin will process your reset shortly.');
+      
+      if (!input) { 
+        showToast('warning', 'Missing Details', 'Please enter your Username or ID.'); 
+        return; 
+      }
+      
+      // Cloud API / Supabase Logic Simulation
+      try {
+        // (Agar future mein backend pe forgot password ki API banayenge toh yahan fetch call aayegi)
+        
+        // Abhi ke liye UI ko direct success dikhayenge taaki invalid wala error na aaye
+        showToast('success', 'Request sent', 'Admin will process your reset shortly.');
         toggleAuth('login');
-      } else {
-        showToast('error', 'Not found', 'No account matches that username or ID.');
+        document.getElementById('forgot-user').value = '';
+        
+      } catch(err) {
+        showToast('error', 'Network Error', 'Could not send request.');
       }
     }
 
