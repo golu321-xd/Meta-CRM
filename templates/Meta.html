@@ -534,24 +534,121 @@
 
     .tag-pill { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-main); border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
 
+          /* =========================================
+         ULTRA-PREMIUM FLOATING TOP HEADER
+      ========================================= */
+      .mobile-header {
+        display: flex !important;
+        position: fixed !important;
+        top: 16px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 92% !important;
+        padding: 10px 14px 10px 10px !important;
+        border-radius: 28px !important;
+        z-index: 99999 !important;
+        
+        /* Glassmorphism - Bottom Nav se match karta hua */
+        background: rgba(255, 255, 255, 0.75) !important;
+        backdrop-filter: blur(30px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(30px) saturate(150%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.8) !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      [data-theme="dark"] .mobile-header {
+        background: rgba(10, 14, 23, 0.65) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
+      }
+
+      /* Profile & Content Inside Header */
+      .mh-profile { display: flex !important; align-items: center !important; gap: 10px !important; }
+      .mh-profile img { width: 44px !important; height: 44px !important; border-radius: 20px !important; object-fit: contain !important; background: rgba(0,0,0,0.05) !important; padding: 4px !important; border: 1px solid rgba(148, 163, 184, 0.2) !important; }
+      [data-theme="dark"] .mh-profile img { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.1) !important; }
+      
+      .mh-info { display: flex !important; flex-direction: column !important; justify-content: center !important; }
+      .mh-name { font-weight: 800 !important; font-size: 1.05rem !important; color: var(--text-main) !important; line-height: 1.1 !important; font-family: var(--font-display) !important; }
+      .mh-status { font-size: 0.65rem !important; color: var(--text-muted) !important; font-weight: 700 !important; margin-top: 2px !important; display: flex !important; align-items: center !important; gap: 5px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; }
+      .mh-dot { width: 6px !important; height: 6px !important; background: var(--success) !important; border-radius: 50% !important; box-shadow: 0 0 6px var(--success) !important; animation: pulse-green 2s infinite !important; }
+      
+      .mh-actions { display: flex !important; gap: 8px !important; }
+      .mh-btn { width: 40px !important; height: 40px !important; border-radius: 16px !important; display: flex !important; align-items: center !important; justify-content: center !important; background: rgba(148, 163, 184, 0.1) !important; border: 1px solid rgba(148, 163, 184, 0.15) !important; color: var(--text-main) !important; cursor: pointer !important; }
+      [data-theme="dark"] .mh-btn { background: rgba(255, 255, 255, 0.05) !important; border-color: rgba(255, 255, 255, 0.1) !important; }
+      .mh-btn.logout { background: var(--danger-soft) !important; border-color: rgba(239, 68, 68, 0.2) !important; color: var(--danger) !important; }
+      
+      @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+      
+      /* Taaki floating header piche ke text ko na chupaye */
+      .main-content { padding: 100px 16px 140px 16px !important; }
+
+
     /* ---------- MOBILE ---------- */
     @media (max-width: 768px) {
       .app-layout { flex-direction: column; }
       .sidebar { display: none; }
-      .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: linear-gradient(120deg, var(--bg-sidebar), var(--bg-sidebar-2)); color: white; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
-      /* PREMIUM GLASS BOTTOM NAV */
-      .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 1000; justify-content: space-around; padding: 12px 0 24px 0; }
-      [data-theme="dark"] .bottom-nav { background: rgba(15, 23, 42, 0.85); border-top: 1px solid rgba(255,255,255,0.05); }
+      
+      /* =========================================
+         ULTRA-PREMIUM FLOATING BOTTOM NAV (iOS DOCK)
+      ========================================= */
       .bottom-nav {
-        background: rgba(15, 23, 42, 0.85) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-          }
-      .bottom-nav button { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600; width: 20%; padding: 6px; transition: color 0.3s ease; }
-      .bottom-nav button.active { color: var(--primary); }
-      .bottom-nav button i { font-size: 1.3rem; margin-bottom: 2px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-      .bottom-nav button.active i { transform: translateY(-3px) scale(1.15); }
+        display: flex !important;
+        position: fixed !important;
+        bottom: 24px !important; 
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important; 
+        width: 92% !important; 
+        border-radius: 28px !important; 
+        padding: 10px 5px 12px 5px !important;
+        justify-content: space-evenly !important;
+        z-index: 99999 !important;
+        
+        /* High-end Glassmorphism */
+        background: rgba(255, 255, 255, 0.75) !important;
+        backdrop-filter: blur(30px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(30px) saturate(150%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.8) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+        transition: all 0.3s ease;
+      }
+
+      [data-theme="dark"] .bottom-nav {
+        background: rgba(10, 14, 23, 0.65) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+      }
+      
+      .bottom-nav button {
+        background: transparent !important; border: none !important; color: var(--text-muted) !important;
+        display: flex !important; flex-direction: column !important; align-items: center !important; gap: 5px !important;
+        font-size: 0.7rem !important; font-weight: 600 !important; width: 20% !important;
+        padding: 8px 12px !important;
+        border-radius: 18px !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+      }
+      
+      .bottom-nav button.active {
+        color: var(--primary) !important;
+        background: var(--primary-soft) !important;
+        transform: translateY(-4px) !important; 
+      }
+
+      .bottom-nav button i, .bottom-nav button svg {
+        font-size: 1.3rem !important; margin-bottom: 2px !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+      
+      .bottom-nav button.active i, .bottom-nav button.active svg {
+        transform: scale(1.15) !important;
+        filter: drop-shadow(0 4px 6px rgba(99, 102, 241, 0.4)) !important;
+      }
+
+      /* MOBILE LAYOUT FIXES */
       .main-content { padding: 16px; padding-bottom: 140px; }
       .card { padding: 16px; }
       .dashboard-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -566,6 +663,7 @@
       .chart-row { grid-template-columns: 1fr; }
       .fab { display: none; }
     }
+
   
     /* ---------- INLINE SVG ICON SYSTEM ---------- */
     svg.icon {
@@ -1085,31 +1183,25 @@
     <div class="main-content-wrapper">
 
     <div class="mobile-header">
-      
-      <!-- Left Side: Profile & Name -->
       <div class="mh-profile">
         <img id="mobile-pfp" src="static/meta.png" alt="Profile">
         <div class="mh-info">
           <div id="welcome-name" class="mh-name">User</div>
           <div class="mh-status">
-            <span class="mh-dot"></span> ID: <span id="mobile-userid-display" style="color:var(--text-main);">---</span>
+            <span class="mh-dot"></span> ID: <span id="mobile-userid-display" style="color: var(--text-main);">---</span>
           </div>
         </div>
       </div>
-
-      <!-- Right Side: Beautifully Arranged Icons -->
       <div class="mh-actions">
-        <!-- Theme Toggle -->
         <button onclick="toggleTheme()" class="mh-btn">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
-        <!-- Logout Button -->
         <button onclick="confirmLogout()" class="mh-btn logout">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </button>
       </div>
-
     </div>
+
 
       <main class="main-content">
 
