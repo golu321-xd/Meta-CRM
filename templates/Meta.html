@@ -559,20 +559,59 @@
       flex-shrink: 0;
     }
     button.btn svg.icon, .nav-menu button svg.icon, .bottom-nav button svg.icon { width: 1.05em; height: 1.05em; }
-        /* ---------- OFFERS CATALOG ---------- */
-    .offer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; padding-bottom: 40px; }
-    .offer-card { background: var(--bg-card); border-radius: 24px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: transform 0.3s ease; display: flex; flex-direction: column; }
-    .offer-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: var(--primary-soft); }
-    .offer-banner { width: 100%; height: 220px; object-fit: cover; background: rgba(0,0,0,0.05); }
-    .offer-details { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-    .offer-title { font-family: var(--font-display); font-weight: 800; font-size: 1rem; margin-bottom: 16px; line-height: 1.3; color: var(--text-main); }
-    .price-box { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; background: var(--bg-main); padding: 12px 16px; border-radius: 16px; border: 1px solid var(--border); }
+    /* ---------- OFFERS CATALOG (ULTRA LUXURY UPDATE) ---------- */
+    .offer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 26px; padding-bottom: 40px; }
+    
+    .offer-card { 
+        background: linear-gradient(145deg, var(--bg-card) 0%, rgba(0,0,0,0.02) 100%);
+        border-radius: 28px; overflow: hidden; 
+        border: 1px solid rgba(148, 163, 184, 0.15); 
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08); 
+        transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); 
+        display: flex; flex-direction: column; position: relative;
+    }
+    [data-theme="dark"] .offer-card {
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    }
+    
+    .offer-card:hover { 
+        transform: translateY(-8px) scale(1.02); 
+        box-shadow: 0 24px 40px -12px rgba(79, 70, 229, 0.2); 
+        border-color: rgba(79, 70, 229, 0.3); 
+    }
+    
+    /* Image Area - Floating & Studio Lighting */
+    .offer-banner { 
+        width: 100%; height: 240px; 
+        object-fit: contain; /* Pehle 'cover' tha jisse image kat rahi thi, ab puri dikhegi */
+        padding: 30px; box-sizing: border-box;
+        background: radial-gradient(circle at 50% 50%, rgba(148, 163, 184, 0.1) 0%, transparent 70%); 
+        transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15)); /* Chashme ke niche 3D parchai (shadow) */
+    }
+    [data-theme="dark"] .offer-banner { filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); }
+    .offer-card:hover .offer-banner { transform: scale(1.1) translateY(-6px) rotate(-1deg); }
+    
+    /* Text & Price Box - Minimalist */
+    .offer-details { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+    .offer-title { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; margin-bottom: 20px; line-height: 1.3; color: var(--text-main); letter-spacing: -0.3px; }
+    
+    .price-box { 
+        margin-top: auto; display: flex; justify-content: space-between; align-items: center; 
+        background: rgba(148, 163, 184, 0.08); padding: 16px 20px; border-radius: 20px; 
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    [data-theme="dark"] .price-box { background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.05); }
+    
     .price-mrp { display: flex; flex-direction: column; }
-    .price-mrp span { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
-    .price-mrp del { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); }
+    .price-mrp span { font-size: 0.65rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 2px; }
+    .price-mrp del { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); opacity: 0.7; }
+    
     .price-offer { display: flex; flex-direction: column; text-align: right; }
-    .price-offer span { font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--success); }
-    .price-offer strong { font-size: 1.4rem; font-weight: 800; color: var(--text-main); font-family: var(--font-display); }
+    .price-offer span { font-size: 0.65rem; text-transform: uppercase; font-weight: 800; color: var(--success); letter-spacing: 1px; margin-bottom: 2px; }
+    .price-offer strong { font-size: 1.55rem; font-weight: 900; color: var(--text-main); font-family: var(--font-display); text-shadow: 0 2px 10px rgba(0,0,0,0.05); }
 
     /* ---------- PREMIUM OFFER BANNER (LUXURY GOLD) ---------- */
     .premium-banner-wrapper { background: linear-gradient(145deg, #111111, #000000); border-radius: 16px; border: 1px solid #c5a059; box-shadow: 0 4px 20px rgba(197, 160, 89, 0.15); overflow: hidden; margin-bottom: 24px; animation: fadeIn 0.4s ease; }
@@ -635,6 +674,123 @@
 .empty-state h3 { font-size: 1.1rem; color: var(--text-main); margin: 0 0 6px 0; }
 .empty-state p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
     
+    /* =========================================
+       ULTRA-PREMIUM APPLY BUTTON (TAP ANIMATION)
+    ========================================= */
+    .btn-apply-offer {
+        margin-top: 18px;
+        width: 100%;
+        padding: 15px 20px;
+        /* Naya, aur bhi premium luxury gradient (Deep Indigo to Rich Violet) */
+        background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%); 
+        color: #ffffff !important;
+        border: none;
+        border-radius: 16px;
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 20px rgba(67, 56, 202, 0.25);
+        /* Transition ko fast aur smooth kiya gaya hai */
+        transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), 
+                    background 0.2s ease, 
+                    box-shadow 0.2s ease;
+    }
+    
+    /* Sirf Hover ke liye (Mouse users) */
+    @media (hover: hover) {
+        .btn-apply-offer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(67, 56, 202, 0.45);
+        }
+    }
+
+    /* ====== YAHAN HAI AAPKA JAADU (Tap / Active State) ====== */
+    .btn-apply-offer:active {
+        transform: scale(0.94) !important; /* Button 6% chota hoga (Shrink) */
+        background: #475569 !important; /* Premium Slate Grey color */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    /* Arrow Icon Animation */
+    .btn-apply-offer svg {
+        transition: transform 0.3s ease;
+    }
+    .btn-apply-offer:hover svg, .btn-apply-offer:active svg {
+        transform: translateX(6px); /* Teer thoda aage khiskega */
+    }
+
+    /* =========================================
+       ULTRA-PREMIUM MOBILE HEADER (GLASSMORPHISM)
+    ========================================= */
+    .mobile-header {
+        position: sticky; top: 0; z-index: 1000;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 12px 20px;
+        /* Bottom nav jaisa perfect Glassmorphism */
+        background: rgba(255, 255, 255, 0.82) !important; 
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        transition: background 0.3s ease, border 0.3s ease;
+    }
+    
+    [data-theme="dark"] .mobile-header {
+        background: rgba(15, 23, 42, 0.82) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .mh-profile { display: flex; align-items: center; gap: 12px; }
+    .mh-profile img {
+        width: 42px; height: 42px; border-radius: 12px; /* Premium Squircle look */
+        object-fit: contain; background: var(--bg-card);
+        padding: 3px; border: 1px solid var(--border);
+    }
+    
+    .mh-info { display: flex; flex-direction: column; justify-content: center; }
+    .mh-name {
+        font-family: var(--font-display); font-weight: 800; font-size: 1.15rem;
+        color: var(--text-main); line-height: 1.1; letter-spacing: -0.2px;
+    }
+    .mh-status {
+        font-size: 0.65rem; color: var(--text-muted); font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px;
+        display: flex; align-items: center; gap: 6px;
+    }
+    
+    /* Live Pulsing Green Dot */
+    .mh-dot {
+        width: 6px; height: 6px; background: var(--success); border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    
+    /* Rearranged Top Buttons */
+    .mh-actions { display: flex; gap: 10px; }
+    .mh-btn {
+        width: 38px; height: 38px; border-radius: 12px; display: flex;
+        align-items: center; justify-content: center; cursor: pointer;
+        background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.2);
+        color: var(--text-main); transition: transform 0.15s, background 0.2s;
+    }
+    [data-theme="dark"] .mh-btn { 
+        background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); 
+    }
+    .mh-btn:active { transform: scale(0.9); } /* Tap shrink effect */
+    .mh-btn.logout { color: var(--danger); background: var(--danger-soft); border-color: rgba(239, 68, 68, 0.2); }
 
   </style>
 </head>
@@ -907,33 +1063,28 @@
 
     <div class="main-content-wrapper">
 
-    <div class="mobile-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 22px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 1000;">
+    <div class="mobile-header">
       
-      <div style="display: flex; align-items: center; gap: 14px;">
-        
-                <img id="mobile-pfp" src="static/meta.png" alt="Profile" style="width: 48px; height: 48px; border-radius: 14px; object-fit: contain; background: white; padding: 4px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2);">
-        
-        <div style="display: flex; flex-direction: column; justify-content: center;">
-          <div id="welcome-name" style="font-weight: 700; font-size: 1.2rem; color: var(--text-main); letter-spacing: 0.3px; line-height: 1.2;">User</div>
-          
-          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; font-weight: 600;">
-            ID: <span id="mobile-userid-display" style="color: var(--text-main); font-weight: 700;">---</span>
-          </div>
-
-          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; display: flex; align-items: center; gap: 5px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
-            <span style="display: inline-block; width: 7px; height: 7px; background: #10b981; border-radius: 50%; box-shadow: 0 0 6px #10b981;"></span> 
-            System Active
+      <!-- Left Side: Profile & Name -->
+      <div class="mh-profile">
+        <img id="mobile-pfp" src="static/meta.png" alt="Profile">
+        <div class="mh-info">
+          <div id="welcome-name" class="mh-name">User</div>
+          <div class="mh-status">
+            <span class="mh-dot"></span> ID: <span id="mobile-userid-display" style="color:var(--text-main);">---</span>
           </div>
         </div>
-
       </div>
 
-      <div style="display: flex; gap: 12px;">
-        <button onclick="toggleTheme()" style="cursor: pointer; border-radius: 12px; width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(4px); color: var(--text-main);">
-          <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <!-- Right Side: Beautifully Arranged Icons -->
+      <div class="mh-actions">
+        <!-- Theme Toggle -->
+        <button onclick="toggleTheme()" class="mh-btn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
-        <button onclick="confirmLogout()" style="cursor: pointer; border-radius: 12px; width: 42px; height: 42px; padding: 0; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444;">
-          <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <!-- Logout Button -->
+        <button onclick="confirmLogout()" class="mh-btn logout">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </button>
       </div>
 
@@ -2839,7 +2990,7 @@ function exportDeals(type) {
         }
         }
     
-    async function fetchOffers() {
+     async function fetchOffers() {
         try {
             document.getElementById('offersGrid').innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><div class="boot-ring" style="margin: 0 auto 16px; border-top-color: var(--primary);"></div><p>Syncing live offers from Supabase...</p></div>`;
             
@@ -2872,6 +3023,9 @@ function exportDeals(type) {
                                     <strong>₹${offer.offer_price.toLocaleString()}</strong>
                                 </div>
                             </div>
+                            <button class="btn-apply-offer" onclick="applyOfferToLead('${offer.model_name.replace(/'/g, "\\'")}', ${offer.offer_price})">
+                                Apply Offer <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                            </button>
                         </div>
                     </div>`;
                 }).join('');
@@ -2879,6 +3033,27 @@ function exportDeals(type) {
         } catch(e) {
             document.getElementById('offersGrid').innerHTML = `<div class="empty-state" style="grid-column: 1/-1; color: var(--danger);"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="font-size:3rem; margin-bottom:10px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><p>Failed to load offers from server.</p></div>`;
         }
+    }
+
+
+      /* ==========================================================
+       APPLY OFFER TO LEAD LOGIC
+    ========================================================== */
+    function applyOfferToLead(modelName, price) {
+        // 1. सीधा Leads वाले टैब पर ले जाओ
+        switchTab('leads');
+        
+        // 2. Notes वाले बॉक्स में ऑफर की डिटेल ऑटो-फिल कर दो
+        const notesField = document.getElementById('leadNotes');
+        notesField.value = `Interested in: ${modelName}\nQuoted Special Price: ₹${price.toLocaleString()}`;
+        
+        // 3. यूज़र को टोस्ट मैसेज दिखाओ
+        showToast('success', 'Offer Applied!', 'Customer detail daalkar lead save karein.');
+        
+        // 4. नाम वाले बॉक्स पर कर्सर (Focus) ले आओ ताकि तुरंत टाइप कर सकें
+        setTimeout(() => {
+            document.getElementById('customerName').focus();
+        }, 300);
     }
 
   // ================= PULL TO REFRESH LOGIC (Ultra Smooth & Strict) =================
