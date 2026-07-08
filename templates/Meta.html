@@ -809,7 +809,7 @@
       </div>
       <div class="sidebar-user">
         <div class="pfp-container" title="Click to change profile picture" onclick="document.getElementById('pfp-upload').click()">
-          <img id="sidebar-pfp" src="" alt="Profile Picture">
+          <img id="sidebar-pfp" src="meta.png" alt="Profile Picture" style="background: white; object-fit: contain; padding: 2px;">
         </div>
         <input type="file" id="pfp-upload" accept="image/*" class="hidden" onchange="uploadProfilePicture(event)">
         <div class="sidebar-user-info">
@@ -1501,7 +1501,7 @@
       const pic = defaultPfp; 
       document.getElementById('current-user-display').innerText = currentUser;
       document.getElementById('current-userid-display').innerText = currentUserId || '00000000';
-      document.getElementById('sidebar-pfp').src = pic;
+      document.getElementById('sidebar-pfp').src = currentUser.pfp || 'meta.png';
       
       const mobUser = document.getElementById('mobile-user-display');
       const mobId = document.getElementById('mobile-userid-display');
