@@ -620,6 +620,21 @@
     #ptr-loader svg { width: 22px; height: 22px; color: var(--primary); transition: transform 0.1s; }
     #ptr-loader.refreshing svg { animation: ptrSpin 0.8s linear infinite; }
     @keyframes ptrSpin { 100% { transform: rotate(360deg); } }
+    
+    @media (max-width: 768px) {
+    input, textarea, select {
+        font-size: 16px !important;
+    }
+    }
+
+    .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px; text-align: center; width: 100%;
+}
+.empty-state svg { width: 50px; height: 50px; opacity: 0.4; color: var(--text-muted); margin-bottom: 12px; }
+.empty-state h3 { font-size: 1.1rem; color: var(--text-main); margin: 0 0 6px 0; }
+.empty-state p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+    
 
   </style>
 </head>
@@ -1678,111 +1693,140 @@
     ========================================================== */
     function isValidPhone(v) { return /^[0-9+\-\s()]{7,15}$/.test(v.trim()); }
 
-        /* ==========================================================
-       LEAD CRUD
-    ========================================================== */
-    async function addLead() {
-      const name = document.getElementById('customerName').value.trim();
-      const contact = document.getElementById('customerContact').value.trim();
-      const model = document.getElementById('model').value;
-      const source = document.getElementById('leadSource').value;
-      const priority = document.getElementById('leadPriority').value;
-      const time = document.getElementById('followUpTime').value;
-      const notes = document.getElementById('leadNotes').value.trim();
-      const tagsRaw = document.getElementById('leadTags').value.trim();
-
-      const errEl = document.getElementById('err-contact');
-      const contactField = document.getElementById('customerContact');
-      errEl.style.display = 'none';
-      contactField.classList.remove('invalid');
-
-      if (!name || !contact || !model || !time) {
-        showToast('warning', 'Missing required fields', 'Please fill in name, contact, model and follow-up date.');
-        return;
-      }
-      if (!isValidPhone(contact)) {
-        errEl.style.display = 'block';
-        contactField.classList.add('invalid');
-        showToast('warning', 'Invalid phone number', 'Please check the contact number format.');
-        return;
-      }
-      
-                  // ==========================================
-      // GLOBAL DUPLICATE LEAD PREVENTION (SUPER FIXED)
-      // ==========================================
-      try {
-        let checkRes = await fetch(`${API_BASE_URL}/leads?owner=admin`); 
-        if (checkRes.ok) {
-          let globalLeads = await checkRes.json();
-          let isDuplicate = globalLeads.find(l => l.customerContact === contact);
-          
-          if (isDuplicate) {
-            errEl.innerText = `Assigned to ${isDuplicate.owner} (Status: ${isDuplicate.status})`;
-            errEl.style.display = 'block';
-            contactField.classList.add('invalid');
-            
-            let msg = isDuplicate.owner === currentUser 
-                ? `You already saved this number earlier.` 
-                : `Lead blocked! This number is already assigned to ${isDuplicate.owner}.`;
-                
-            showToast('error', 'Duplicate Entry', msg);
-            contactField.focus();
-            return;
-          }
-        }
-      } catch (err) {
-        console.log("Global duplicate check failed", err);
-      }
-      // ==========================================
-
-      const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
-      const now = new Date().toISOString();
-
-      // Ye keys perfectly Naye SQL database se match karti hain
-      const newLead = {
-        id: 'L-' + Date.now().toString().slice(-6),
-        owner: currentUser,
-        customerName: name,         
-        customerContact: contact,   
-        model: model,
-        source: source,
-        priority: priority,
-        notes: notes,
-        status: 'Open',
-        followUpTime: time,         
-        createdAt: now,
-        tags: tags,
-        lostReason: "", wonSerial: "", wonInvoice: "", wonDate: "", wonArticle: "", wonModel: "", wonAmount: "",
-        history: JSON.stringify([{ type: 'created', title: 'Lead created', time: now, body: `Added via ${source}. Priority: ${priority}.` }])
-      };
-
-      try {
-        let response = await fetch(`${API_BASE_URL}/leads`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newLead)
-        });
-
-        if (response.ok) {
-          showToast('success', 'Lead saved', 'Cloud par successfully save ho gaya!');
-          document.getElementById('customerName').value = ""; 
-          document.getElementById('customerContact').value = "";
-          document.getElementById('model').value = ""; 
-          document.getElementById('followUpTime').value = "";
-          document.getElementById('leadNotes').value = ""; 
-          document.getElementById('leadTags').value = "";
-          
-          if(typeof fetchAllLeadsFromDatabase === "function") {
-              await fetchAllLeadsFromDatabase(); // Cloud se update wapas UI me laane ke liye
-          }
-        } else {
-          showToast('error', 'Save failed', 'Database me save nahi ho paya.');
-        }
-      } catch (err) {
-        showToast('error', 'Network Error', 'Server se connect nahi ho paaya.');
-      }
+/* ==========================================================
+   LEAD CRUD (100% FINAL - ULTRA SPAM PROTECTED)
+========================================================== */
+async function addLead(event) {
+    // 1. ULTRA-LOCK (JavaScript Hard Lock)
+    // event.currentTarget use kiya taaki icon par click ho toh bhi button hi pakda jaye
+    const saveBtn = event ? event.currentTarget : null; 
+    
+    // Agar pehle se process chal raha hai, toh turant ruk jao (Strict block)
+    if (saveBtn && saveBtn.dataset.isSaving === "true") {
+        console.log("Spam blocked!");
+        return; 
+    }
+    
+    // Lock laga do
+    if (saveBtn) {
+        saveBtn.dataset.isSaving = "true";
+        saveBtn.classList.add('loading');
     }
 
+    try {
+        const name = document.getElementById('customerName').value.trim();
+        const contact = document.getElementById('customerContact').value.trim();
+        const model = document.getElementById('model').value;
+        const source = document.getElementById('leadSource').value;
+        const priority = document.getElementById('leadPriority').value;
+        const time = document.getElementById('followUpTime').value;
+        const notes = document.getElementById('leadNotes').value.trim();
+        const tagsRaw = document.getElementById('leadTags').value.trim();
+
+        const errEl = document.getElementById('err-contact');
+        const contactField = document.getElementById('customerContact');
+        errEl.style.display = 'none';
+        contactField.classList.remove('invalid');
+
+        // VALIDATION CHECKS
+        if (!name || !contact || !model || !time) {
+            showToast('warning', 'Missing required fields', 'Please fill in name, contact, model and follow-up date.');
+            return; // Finally block isko automatically unlock kar dega
+        }
+        if (!isValidPhone(contact)) {
+            errEl.style.display = 'block';
+            contactField.classList.add('invalid');
+            showToast('warning', 'Invalid phone number', 'Please check the contact number format.');
+            return;
+        }
+
+        // DUPLICATE CHECK LOGIC
+        try {
+            let checkRes = await fetch(`${API_BASE_URL}/leads?owner=admin`);
+            if (checkRes.ok) {
+                let globalLeads = await checkRes.json();
+                let isDuplicate = globalLeads.find(l => l.customerContact === contact);
+
+                if (isDuplicate) {
+                    errEl.innerText = `Assigned to ${isDuplicate.owner} (Status: ${isDuplicate.status})`;
+                    errEl.style.display = 'block';
+                    contactField.classList.add('invalid');
+
+                    let msg = isDuplicate.owner === currentUser
+                        ? `You already saved this number earlier.`
+                        : `Lead blocked! This number is already assigned to ${isDuplicate.owner}.`;
+
+                    showToast('error', 'Duplicate Entry', msg);
+                    contactField.focus();
+                    return;
+                }
+            }
+        } catch (err) {
+            console.log("Global duplicate check failed", err);
+        }
+
+        // NEW LEAD OBJECT CREATION
+        const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+        const now = new Date().toISOString();
+
+        const newLead = {
+            id: 'L-' + Date.now().toString().slice(-6),
+            owner: currentUser,
+            customerName: name,
+            customerContact: contact,
+            model: model,
+            source: source,
+            priority: priority,
+            notes: notes,
+            status: 'Open',
+            followUpTime: time,
+            createdAt: now,
+            tags: tags,
+            lostReason: "", wonSerial: "", wonInvoice: "", wonDate: "", wonArticle: "", wonModel: "", wonAmount: "",
+            history: JSON.stringify([{ type: 'created', title: 'Lead created', time: now, body: `Added via ${source}. Priority: ${priority}` }])
+        };
+
+        // SAVE DATA TO DATABASE (API POST)
+        try {
+            let response = await fetch(`${API_BASE_URL}/leads`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newLead)
+            });
+
+            if (response.ok) {
+                showToast('success', 'Lead saved', 'Cloud par successfully save ho gaya!');
+                
+                // Form Clear karna
+                document.getElementById('customerName').value = "";
+                document.getElementById('customerContact').value = "";
+                document.getElementById('model').value = "";
+                document.getElementById('followUpTime').value = "";
+                document.getElementById('leadNotes').value = "";
+                document.getElementById('leadTags').value = "";
+
+                // UI update karna
+                if (typeof fetchAllLeadsFromDatabase === "function") {
+                    await fetchAllLeadsFromDatabase();
+                }
+            } else {
+                showToast('error', 'Save failed', 'Database me save nahi ho paya.');
+            }
+        } catch (err) {
+            showToast('error', 'Network Error', 'Server se connect nahi ho paaya.');
+        }
+
+    } catch (error) {
+        console.log("Main Execution Error:", error);
+    } finally {
+        // 2. UNLOCK PROCESS (Har haal me chalega)
+        if (saveBtn) {
+            saveBtn.dataset.isSaving = "false";
+            saveBtn.classList.remove('loading');
+        }
+    }
+}
+    
     function promptActionModal(leadId, actionType) {
       activeActionLeadId = leadId;
       const lead = allLeads.find(l => l.id === leadId);
@@ -2236,8 +2280,21 @@
       });
 
       const tbody = document.getElementById('leadsContainer');
-      if (!rows.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p>No leads match this view.</p></div></td></tr>`; return; }
       tbody.innerHTML = "";
+      if (rows.length === 0) {
+    tbody.innerHTML = `
+    <tr>
+        <td colspan="5" style="border: none;">
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                <h3>No Records Found</h3>
+                <p>Abhi yahan dikhane ke liye koi data nahi hai.</p>
+            </div>
+        </td>
+    </tr>`;
+    return; // यहीं से कोड रुक जाएगा, आगे का खाली लूप नहीं चलेगा
+}
+          
       rows.forEach(lead => {
         let sBadge = lead.status === 'Closed' ? 'badge-closed' : (lead.status === 'Lost' ? 'badge-lost' : (lead.status === 'Junk' ? 'badge-junk' : 'badge-open'));
         const overdue = lead.status === 'Open' && new Date(lead.followUpTime) < new Date();
