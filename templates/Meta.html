@@ -979,6 +979,11 @@
 
                 <div style="display: flex; gap: 8px; width: 100%; align-items: center; background: rgba(0,0,0,0.15); padding: 10px; border-radius: 10px; border: 1px solid var(--border);">
                   <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; padding-left: 5px;">Export:</span>
+                  <button class="btn btn-primary btn-sm clickable" onclick="exportMyDeals('Open')">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  Open
+                  </button>
+                
                   <button class="btn btn-success btn-sm" onclick="exportMyDeals('Closed')" style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 8px;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><path d="M12 15V3"/></svg> Won</button>
                   <button class="btn btn-danger btn-sm" onclick="exportMyDeals('Lost')" style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 8px;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><path d="M12 15V3"/></svg> Lost</button>
                   <button class="btn btn-secondary btn-sm" onclick="exportMyLeadsCsv()" style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 8px;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/></svg> All</button>
@@ -1047,6 +1052,10 @@
                 <h2 style="margin:0; color: var(--danger);"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="8" rx="2"/><rect x="2" y="13" width="20" height="8" rx="2"/><path d="M6 7h.01"/><path d="M6 17h.01"/></svg> System Global Control</h2>
               </div>
               <div class="flex-group">
+                <button class="btn btn-primary btn-sm clickable" onclick="exportDeals('Open')">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  Open
+                </button>
                 <button class="btn btn-success btn-sm" onclick="exportDeals('Closed')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><path d="M12 15V3"/></svg> Won</button>
                 <button class="btn btn-danger btn-sm" onclick="exportDeals('Lost')"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><path d="M12 15V3"/></svg> Lost</button>
                 <button class="btn btn-secondary btn-sm" onclick="exportFullBackup()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg> Full Backup (JSON)</button>
@@ -2350,36 +2359,76 @@
       downloadCsv('My_Leads_Export.csv', csv);
     }
 
-    function exportMyDeals(type) {
-      const myLeads = getMyLeads(); // यह सिर्फ उस यूज़र की लीड्स निकालेगा जो लॉग इन है
-      const data = myLeads.filter(l => l.status === type); // Won या Lost के हिसाब से फ़िल्टर करेगा
-      
-      if (!data.length) { showToast('warning', 'Nothing to export', `You have no ${type} deals.`); return; }
-      
-      let csvData = type === 'Closed'
-        ? "ID,Customer,Contact,Source,Model,Serial,Invoice,Date,Article,Amount\n"
-        : "ID,Customer,Contact,Source,Model,Reason\n";
-        
-      data.forEach(l => {
-        if (type === 'Closed') csvData += `${l.id},"${l.customerName}",${l.customerContact},${l.source},"${l.wonModel}",${l.wonSerial},${l.wonInvoice},${l.wonDate},${l.wonArticle},${l.wonAmount||''}\n`;
-        else csvData += `${l.id},"${l.customerName}",${l.customerContact},${l.source},"${l.model}","${l.lostReason}"\n`;
-      });
-      
-      downloadCsv(`My_${type}_Deals_Export.csv`, csvData);
+// --- NORMAL USER EXPORT ---
+function exportMyDeals(type) {
+    const myLeads = getMyLeads();
+    const data = myLeads.filter(l => l.status === type);
+
+    if (data.length === 0) { 
+        showToast('warning', 'Nothing to export', 'You have no ' + type + ' deals.'); 
+        return; 
     }
 
-    function exportDeals(type) {
-      const data = allLeads.filter(l => l.status === type);
-      if (!data.length) { showToast('warning', 'Nothing to export', `No ${type} deals found.`); return; }
-      let csvData = type === 'Closed'
-        ? "ID,Agent,Customer,Contact,Source,Model,Serial,Invoice,Date,Article,Amount\n"
-        : "ID,Agent,Customer,Contact,Source,Model,Reason\n";
-      data.forEach(l => {
-        if (type === 'Closed') csvData += `${l.id},${l.owner},"${l.customerName}",${l.customerContact},${l.source},"${l.wonModel}",${l.wonSerial},${l.wonInvoice},${l.wonDate},${l.wonArticle},${l.wonAmount||''}\n`;
-        else csvData += `${l.id},${l.owner},"${l.customerName}",${l.customerContact},${l.source},"${l.model}","${l.lostReason}"\n`;
-      });
-      downloadCsv(`${type}_Deals_Export.csv`, csvData);
+    let csvData = "";
+    
+    if (type === 'Closed' || type === 'won') {
+        csvData = "ID,Customer,Contact,Source,Model,Serial,Invoice,Date,Article,Amount\n";
+        data.forEach(l => {
+            csvData += l.id + "," + l.customerName + "," + l.customerContact + "," + l.source + "," + l.model + "," + (l.wonSerial || '') + "," + (l.wonInvoice || '') + "," + (l.wonDate || '') + "," + (l.wonArticle || '') + "," + (l.wonAmount || '') + "\n";
+        });
+    } 
+    else if (type === 'Lost' || type === 'lost') {
+        csvData = "ID,Customer,Contact,Source,Model,Reason\n";
+        data.forEach(l => {
+            csvData += l.id + "," + l.customerName + "," + l.customerContact + "," + l.source + "," + l.model + "," + (l.lostReason || '') + "\n";
+        });
+    } 
+    else {
+        // Open Leads ke liye
+        csvData = "ID,Customer,Contact,Source,Model,Status\n";
+        data.forEach(l => {
+            csvData += l.id + "," + l.customerName + "," + l.customerContact + "," + l.source + "," + l.model + "," + l.status + "\n";
+        });
     }
+
+    downloadCsv('My_' + type + '_Deals_Export.csv', csvData);
+}
+
+
+// --- ADMIN EXPORT ---
+function exportDeals(type) {
+    const data = allLeads.filter(l => l.status === type);
+    
+    if (data.length === 0) { 
+        showToast('warning', 'Nothing to export', 'No ' + type + ' deals found.'); 
+        return; 
+    }
+
+    let csvData = "";
+    
+    if (type === 'Closed' || type === 'won') {
+        csvData = "ID,Agent,Customer,Contact,Source,Model,Serial,Invoice,Date,Article,Amount\n";
+        data.forEach(l => {
+            csvData += l.id + "," + l.owner + "," + l.customerName + "," + l.customerContact + "," + l.source + "," + l.model + "," + (l.wonSerial || '') + "," + (l.wonInvoice || '') + "," + (l.wonDate || '') + "," + (l.wonArticle || '') + "," + (l.wonAmount || '') + "\n";
+        });
+    } 
+    else if (type === 'Lost' || type === 'lost') {
+        csvData = "ID,Agent,Customer,Contact,Source,Model,Reason\n";
+        data.forEach(l => {
+            csvData += l.id + "," + l.owner + "," + l.customerName + "," + l.customerContact + "," + l.source + "," + l.model + "," + (l.lostReason || '') + "\n";
+        });
+    } 
+    else {
+        // Open Leads ke liye
+        csvData = "ID,Agent,Customer,Contact,Source,Model,Status\n";
+        data.forEach(l => {
+            csvData += l.id + "," + l.owner + "," + l.customerName + "," + l.customerContact + "," + l.source + "," + l.model + "," + l.status + "\n";
+        });
+    }
+
+    downloadCsv('Admin_' + type + '_Deals_Export.csv', csvData);
+}
+
 
     function exportFullBackup() {
       const backup = { users, allLeads, exportedAt: new Date().toISOString() };
