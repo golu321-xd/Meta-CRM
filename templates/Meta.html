@@ -452,6 +452,19 @@
       .kanban-board > div { flex: none; max-width: none; }
     }
 
+    main { 
+        padding-bottom: 90px !important; /* आखिरी लीड कभी Bottom Nav के पीछे नहीं छुपेगी */
+        }   
+
+    /* BUTTON CLICK ANIMATION */
+    .btn, .fab, .bottom-nav button, .clickable {
+        transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s !important;
+    }
+    .btn:active, .fab:active, .bottom-nav button:active, .clickable:active {
+        transform: scale(0.94) !important; /* टच करते ही हल्का सा अंदर दबेगा */
+        opacity: 0.8;
+    }
+    
     /* timeline in lead detail modal */
     .timeline { list-style: none; margin: 0; padding: 0; position: relative; }
     .timeline li { position: relative; padding: 0 0 20px 30px; border-left: 2px solid var(--border); margin-left: 10px; }
@@ -513,6 +526,12 @@
       /* PREMIUM GLASS BOTTOM NAV */
       .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(0,0,0,0.05); box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 1000; justify-content: space-around; padding: 12px 0 24px 0; }
       [data-theme="dark"] .bottom-nav { background: rgba(15, 23, 42, 0.85); border-top: 1px solid rgba(255,255,255,0.05); }
+      .bottom-nav {
+        background: rgba(15, 23, 42, 0.85) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+          }
       .bottom-nav button { background: transparent; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; font-weight: 600; width: 20%; padding: 6px; transition: color 0.3s ease; }
       .bottom-nav button.active { color: var(--primary); }
       .bottom-nav button i { font-size: 1.3rem; margin-bottom: 2px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
