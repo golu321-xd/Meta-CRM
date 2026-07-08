@@ -1498,10 +1498,12 @@
             
 
     function loadUserProfile() {
-      const pic = defaultPfp; 
-      document.getElementById('current-user-display').innerText = currentUser;
-      document.getElementById('current-userid-display').innerText = currentUserId || '00000000';
-      document.getElementById('sidebar-pfp').src = currentUser.pfp || 'meta.png';
+  document.getElementById('current-user-display').innerText = currentUser;
+  document.getElementById('current-userid-display').innerText = currentUserId || '00000000';
+  document.querySelectorAll('img[id*="pfp"]').forEach(img => {
+      img.src = 'static/meta.png'; 
+  });
+
       
       const mobUser = document.getElementById('mobile-user-display');
       const mobId = document.getElementById('mobile-userid-display');
