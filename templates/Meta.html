@@ -1043,7 +1043,7 @@
                   
                   <div class="search-bar" style="flex: 2; min-width: 180px; margin: 0; display: flex; align-items: center; background: var(--bg-main); border-radius: 10px; padding: 0 12px; border: 1px solid var(--border);">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity: 0.5; margin-right: 8px;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                    <input type="text" id="searchLeadInput" placeholder="Search leads..." onkeyup="renderLeadsTable()" style="border: none; background: transparent; outline: none; width: 100%; padding: 10px 0; color: var(--text-main);">
+                    <input type="text" id="searchLeadInput" placeholder="Search leads..." onkeyup="debouncedSearch()" style="border: none; background: transparent; outline: none; width: 100%; padding: 10px 0; color: var(--text-main);">
                   </div>
                 </div>
 
@@ -1693,6 +1693,20 @@
     ========================================================== */
     function isValidPhone(v) { return /^[0-9+\-\s()]{7,15}$/.test(v.trim()); }
 
+    /* ==========================================================
+   SECURITY HELPER (XSS PROTECTION)
+========================================================== */
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString().replace(/[&<>'"]/g, function(tag) {
+        const charsToReplace = {
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        };
+        return charsToReplace[tag] || tag;
+    });
+    }
+    
+
 /* ==========================================================
    LEAD CRUD (100% FINAL - ULTRA SPAM PROTECTED)
 ========================================================== */
@@ -2240,6 +2254,20 @@ async function addLead(event) {
           <div style="font-weight:800; font-family:var(--font-display); color:var(--primary);">#${i + 1}</div>
         </div>`).join('');
     }
+
+    /* ==========================================================
+   PERFORMANCE HELPER (SEARCH DEBOUNCE)
+========================================================== */
+let searchTimeout;
+function debouncedSearch() {
+    clearTimeout(searchTimeout);
+    
+    // User ke type karna band karne ke 300ms baad hi search chalega
+    searchTimeout = setTimeout(() => {
+        renderLeadsTable(); 
+    }, 300);
+    }
+    
 
     function renderLeadsTable() { 
       const myLeads = getMyLeads();
