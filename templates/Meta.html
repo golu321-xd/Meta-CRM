@@ -1869,27 +1869,26 @@
             
 
     function loadUserProfile() {
-  document.getElementById('current-user-display').innerText = currentUser;
-  document.getElementById('current-userid-display').innerText = currentUserId || '00000000';
-  document.querySelectorAll('img[id*="pfp"]').forEach(img => {
-      img.src = 'static/meta.png'; 
-  });
-
+      document.getElementById('current-user-display').innerText = currentUser;
+      document.getElementById('current-userid-display').innerText = currentUserId || '00000000';
+      document.querySelectorAll('img[id*="pfp"]').forEach(img => {
+          img.src = 'static/meta.png'; 
+      });
       
       const mobUser = document.getElementById('mobile-user-display');
       const mobId = document.getElementById('mobile-userid-display');
       if(mobUser) mobUser.innerText = currentUser;
       if(mobId) mobId.innerText = currentUserId || '00000000';
       
-      // सिर्फ MASTER ADMIN को एडमिन पैनल का बटन दिखेगा
+      // सिर्फ MASTER ADMIN को एडमिन पैनल का बटन दिखेगा (Strict Hide Logic)
       if (currentUser === 'admin') {
-          document.getElementById('tab-btn-admin').style.display = 'flex';
-          document.getElementById('mob-btn-admin').style.display = 'flex';
+          document.getElementById('tab-btn-admin').style.setProperty('display', 'flex', 'important');
+          document.getElementById('mob-btn-admin').style.setProperty('display', 'flex', 'important');
           isAdminAuthenticated = true; // अब किसी PIN की ज़रूरत नहीं
       } else {
-          // नार्मल यूजर से एडमिन बटन छुपा दो
-          document.getElementById('tab-btn-admin').style.display = 'none';
-          document.getElementById('mob-btn-admin').style.display = 'none';
+          // नार्मल यूजर से एडमिन बटन हमेशा के लिए छुपा दो
+          document.getElementById('tab-btn-admin').style.setProperty('display', 'none', 'important');
+          document.getElementById('mob-btn-admin').style.setProperty('display', 'none', 'important');
           isAdminAuthenticated = false;
       }
     }
