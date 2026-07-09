@@ -915,6 +915,117 @@
     .mh-btn:active { transform: scale(0.9); } /* Tap shrink effect */
     .mh-btn.logout { color: var(--danger); background: var(--danger-soft); border-color: rgba(239, 68, 68, 0.2); }
 
+/* =========================================
+   SMOOTH TAB SLIDE & FADE TRANSITION
+========================================= */
+.tab-content-view {
+  animation: tabSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tabSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99); /* हल्का सा नीचे से ऊपर आएगा */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+    /* =========================================
+   SMOOTH TAB SLIDE & FADE TRANSITION
+========================================= */
+.tab-content-view {
+  animation: tabSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes tabSlideIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* =========================================
+   GLOWING MAGNETIC FAB BUTTON
+========================================= */
+.fab {
+  position: fixed !important;
+  bottom: 100px !important; 
+  right: 24px !important;
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  cursor: pointer !important;
+  z-index: 99990 !important; 
+  box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.5), 0 8px 24px rgba(99, 102, 241, 0.3) !important;
+  animation: fab-breathing-glow 3s infinite alternate !important;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s !important;
+}
+@keyframes fab-breathing-glow {
+  0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.6), 0 8px 20px rgba(99, 102, 241, 0.3); }
+  100% { box-shadow: 0 0 20px 8px rgba(99, 102, 241, 0), 0 12px 30px rgba(168, 85, 247, 0.5); transform: scale(1.03); }
+}
+.fab:active { transform: scale(0.92) !important; background: #475569 !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important; }
+.fab svg { width: 26px; height: 26px; transition: transform 0.3s ease; }
+.fab:active svg { transform: rotate(90deg); }
+
+    /* =========================================
+   GLOWING MAGNETIC FLOATING ACTION BUTTON
+========================================= */
+.fab {
+  position: fixed !important;
+  bottom: 100px !important; /* बॉटम फ्लोटिंग डॉक के ऊपर रहेगा */
+  right: 24px !important;
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important; /* ऑरोरा कलर */
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  cursor: pointer !important;
+  z-index: 99990 !important; /* हेडर/मेन्यू के ठीक नीचे वाली लेयर */
+  
+  /* नियॉन ब्रीदिंग शैडो इफ़ेक्ट */
+  box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.5), 0 8px 24px rgba(99, 102, 241, 0.3) !important;
+  animation: fab-breathing-glow 3s infinite alternate !important;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s !important;
+}
+
+/* धड़कने वाली एनीमेशन (Breathing Effect) */
+@keyframes fab-breathing-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.6), 0 8px 20px rgba(99, 102, 241, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 20px 8px rgba(99, 102, 241, 0), 0 12px 30px rgba(168, 85, 247, 0.5);
+    transform: scale(1.03);
+  }
+}
+
+/* टैप/टच करने पर छोटा और गजब का रिस्पॉन्स */
+.fab:active {
+  transform: scale(0.92) !important;
+  background: #475569 !important; /* टैप पर हमारे थीम जैसा ग्रे हो जाएगा */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.fab svg {
+  width: 26px;
+  height: 26px;
+  transition: transform 0.3s ease;
+}
+.fab:active svg {
+  transform: rotate(90deg); /* टैप करते ही प्लस का निशान घूमेगा */
+}
+    
   </style>
 </head>
 <body>
@@ -1893,6 +2004,46 @@
       }
     }
 
+     // ==========================================
+// LUXURY ROLLING NUMBER COUNTER LOGIC
+// ==========================================
+function animateLuxuryCounters() {
+  const counters = document.querySelectorAll('.stat-card h1, .stat-card .text-3xl, [id*="-count"]');
+  
+  counters.forEach(counter => {
+    // अगर नंबर में % या ₹ है तो उसे अलग करें
+    const targetText = counter.innerText.trim();
+    const targetNumber = parseInt(targetText.replace(/[^0-9]/g, ''));
+    
+    if (isNaN(targetNumber) || targetNumber === 0) return;
+    
+    const suffix = targetText.includes('%') ? '%' : '';
+    const prefix = targetText.includes('₹') ? '₹ ' : '';
+    
+    let startTimestamp = null;
+    const duration = 1200; // 1.2 सेकंड तक नंबर घूमेगा (Perfect Smoothness)
+
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      
+      // Easing Function: शुरू में तेज़, अंत में धीरे (Apple Style)
+      const easeOutQuad = progress * (2 - progress);
+      const currentNumber = Math.floor(easeOutQuad * targetNumber);
+      
+      counter.innerText = prefix + currentNumber.toLocaleString() + suffix;
+      
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        counter.innerText = targetText; // अंत में ओरिजिनल टेक्स्ट सेट करें
+      }
+    };
+    
+    window.requestAnimationFrame(step);
+  });
+}                                                                
+
     function confirmLogout() {
       openConfirm({
         title: 'Log out?',
@@ -1948,19 +2099,32 @@
        TAB SWITCHER
     ========================================================== */
     function switchTab(tabName) {
-      const tabs = ['dashboard', 'leads', 'pipeline', 'alerts', 'admin', 'offers'];
-      if(tabName === 'offers') { fetchGlobalBanner(); fetchOffers(); }
+        const tabs = ['dashboard', 'leads', 'pipeline', 'alerts', 'admin', 'offers'];
+        if(tabName === 'offers') { fetchGlobalBanner(); fetchOffers(); }
 
-      tabs.forEach(t => {
-        document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`tab-btn-${t}`).classList.remove('active');
-        document.getElementById(`mob-btn-${t}`).classList.remove('active');
-      });
-      document.getElementById(`view-${tabName}`).classList.remove('hidden');
-      document.getElementById(`tab-btn-${tabName}`).classList.add('active');
-      document.getElementById(`mob-btn-${tabName}`).classList.add('active');
-      refreshAllData();
-      document.querySelector('.main-content').scrollTop = 0;
+        tabs.forEach(t => {
+            document.getElementById(`view-${t}`).classList.add('hidden');
+            if(document.getElementById(`tab-btn-${t}`)) document.getElementById(`tab-btn-${t}`).classList.remove('active');
+            if(document.getElementById(`mob-btn-${t}`)) document.getElementById(`mob-btn-${t}`).classList.remove('active');
+        });
+        
+        // ✨ JADOO 1: Smooth Tab Slide Animation ✨
+        const targetTab = document.getElementById(`view-${tabName}`);
+        targetTab.classList.remove('hidden');
+        targetTab.classList.remove('tab-content-view');
+        void targetTab.offsetWidth; // Animation Reset (Reflow trick)
+        targetTab.classList.add('tab-content-view');
+        
+        if(document.getElementById(`tab-btn-${tabName}`)) document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+        if(document.getElementById(`mob-btn-${tabName}`)) document.getElementById(`mob-btn-${tabName}`).classList.add('active');
+        
+        refreshAllData();
+        document.querySelector('.main-content').scrollTop = 0;
+
+        // ✨ JADOO 2: Dashboard Rolling Numbers ✨
+        if (tabName === 'dashboard' || tabName === 'home') {
+            setTimeout(animateLuxuryCounters, 200);
+        }
     }
 
     /* ==========================================================
