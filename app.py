@@ -216,3 +216,14 @@ def reset_password():
     except Exception as e:
         print("Error:", str(e))
         return jsonify({"error": str(e)}), 500
+
+# ==========================================
+# 🚀 API TO SEND ENV VARIABLES TO FRONTEND
+# ==========================================
+@app.route('/api/get-env', methods=['GET'])
+def get_env():
+    return jsonify({
+        "url": os.environ.get("SUPABASE_URL"),
+        "key": os.environ.get("SUPABASE_KEY")
+    })
+    
