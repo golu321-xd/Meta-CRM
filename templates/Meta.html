@@ -1350,11 +1350,28 @@
             <div style="font-size: 2.6rem; font-weight: 800; color: var(--primary); font-family: var(--font-display);" id="stat-conversion">0%</div>
           </div>
 
-          <div class="card">
-            <h2 style="font-size:1rem;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15" r="6"/><path d="m9 10-4.5-7"/><path d="m15 10 4.5-7"/><path d="M12 12v6"/></svg> Top Performers (This Team)</h2>
-            <div id="leaderboard-container"></div>
+            <div class="card mt-4" style="padding: 16px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 800;">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary); width: 16px; height: 16px;"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+            Leaderboard
+          </h2>
+          <div style="position: relative;">
+            <select id="leaderboard-time-filter" onchange="renderGlobalLeaderboard()" style="appearance: none; -webkit-appearance: none; background: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.2); padding: 4px 28px 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; outline: none; cursor: pointer;">
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+              <option value="all" selected>All Time</option>
+            </select>
+            <svg style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; pointer-events: none; color: var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </div>
         </div>
+        
+        <div id="global-leaderboard-container"></div>
+      </div>
+      </div>
 
         <!-- LEADS -->
         <div id="view-leads" class="hidden">
@@ -2095,37 +2112,68 @@ function animateLuxuryCounters() {
       reader.readAsDataURL(file);
     }
 
-    /* ==========================================================
-       TAB SWITCHER
-    ========================================================== */
+    // ==========================================
+    // INDESTRUCTIBLE TAB SWITCHER (BLACK SCREEN FIX)
+    // ==========================================
     function switchTab(tabName) {
         const tabs = ['dashboard', 'leads', 'pipeline', 'alerts', 'admin', 'offers'];
-        if(tabName === 'offers') { fetchGlobalBanner(); fetchOffers(); }
+        
+        try {
+            if(tabName === 'offers' && typeof fetchGlobalBanner === 'function') { fetchGlobalBanner(); fetchOffers(); }
+        } catch(e) {}
 
+        // 1. सबको सुरक्षित तरीके से छुपाओ (अगर कोई कोड डिलीट भी हो गया हो, तो लूप क्रैश नहीं होगा)
         tabs.forEach(t => {
-            document.getElementById(`view-${t}`).classList.add('hidden');
-            if(document.getElementById(`tab-btn-${t}`)) document.getElementById(`tab-btn-${t}`).classList.remove('active');
-            if(document.getElementById(`mob-btn-${t}`)) document.getElementById(`mob-btn-${t}`).classList.remove('active');
+            try {
+                let viewEl = document.getElementById(`view-${t}`);
+                if (viewEl) viewEl.classList.add('hidden');
+                
+                let tabBtn = document.getElementById(`tab-btn-${t}`);
+                if (tabBtn) tabBtn.classList.remove('active');
+                
+                let mobBtn = document.getElementById(`mob-btn-${t}`);
+                if (mobBtn) mobBtn.classList.remove('active');
+            } catch(e) {}
         });
         
-        // ✨ JADOO 1: Smooth Tab Slide Animation ✨
-        const targetTab = document.getElementById(`view-${tabName}`);
-        targetTab.classList.remove('hidden');
-        targetTab.classList.remove('tab-content-view');
-        void targetTab.offsetWidth; // Animation Reset (Reflow trick)
-        targetTab.classList.add('tab-content-view');
+        // 2. नए टैब को सुरक्षित तरीके से दिखाओ
+        try {
+            const targetTab = document.getElementById(`view-${tabName}`);
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
+                
+                // Animation Reset (मक्खन वाला स्लाइड)
+                targetTab.classList.remove('tab-content-view');
+                void targetTab.offsetWidth; 
+                targetTab.classList.add('tab-content-view');
+                
+                // 🛑 SAFETY FIX: अगर पुराने स्वाइप इंजन ने स्क्रीन काली की थी, तो उसे जबरदस्ती दिखाओ
+                targetTab.style.display = '';
+                targetTab.style.opacity = '1';
+                targetTab.style.transform = 'none';
+            }
+        } catch(e) {}
         
-        if(document.getElementById(`tab-btn-${tabName}`)) document.getElementById(`tab-btn-${tabName}`).classList.add('active');
-        if(document.getElementById(`mob-btn-${tabName}`)) document.getElementById(`mob-btn-${tabName}`).classList.add('active');
+        // 3. बटन हाईलाइट करो
+        try {
+            let activeTabBtn = document.getElementById(`tab-btn-${tabName}`);
+            if (activeTabBtn) activeTabBtn.classList.add('active');
+            
+            let activeMobBtn = document.getElementById(`mob-btn-${tabName}`);
+            if (activeMobBtn) activeMobBtn.classList.add('active');
+        } catch(e) {}
         
-        refreshAllData();
-        document.querySelector('.main-content').scrollTop = 0;
+        try { refreshAllData(); } catch(e) {}
+        try { document.querySelector('.main-content').scrollTop = 0; } catch(e) {}
 
-        // ✨ JADOO 2: Dashboard Rolling Numbers ✨
+        // जादुई रोलिंग नंबर्स
         if (tabName === 'dashboard' || tabName === 'home') {
-            setTimeout(animateLuxuryCounters, 200);
+            setTimeout(() => {
+                if (typeof animateLuxuryCounters === 'function') animateLuxuryCounters();
+            }, 200);
         }
     }
+
 
     /* ==========================================================
        VALIDATION HELPERS
@@ -2599,7 +2647,7 @@ async function addLead(event) {
       const junk = myLeads.filter(l => l.status === 'Junk').length;
 
       // ==========================================
-      // SAFE DOM UPDATES (Ab koi crash nahi hoga)
+      // SAFE DOM UPDATES 
       // ==========================================
       if (document.getElementById('stat-total')) document.getElementById('stat-total').innerText = total;
       if (document.getElementById('stat-open')) document.getElementById('stat-open').innerText = open;
@@ -2611,20 +2659,18 @@ async function addLead(event) {
       const convRate = validTotalForConversion > 0 ? ((closed / validTotalForConversion) * 100).toFixed(1) + '%' : '0%';
       
       if (document.getElementById('stat-conversion')) document.getElementById('stat-conversion').innerText = convRate;
-      // Avatar & Name Logic (ID Supabase se original aane denge)
+      
+      // Avatar & Name Logic 
       if (document.getElementById('welcome-name')) {
         let uName = currentUser.split('_')[0];
         document.getElementById('welcome-name').innerText = uName;
         
-        // Avatar ka pehla letter set karega
         if (document.getElementById('user-avatar')) {
             document.getElementById('user-avatar').innerText = uName.charAt(0).toUpperCase();
         }
       }
 
-      
-      // ==========================================
-
+      // CHIPS LOGIC
       ['All', 'Open', 'Closed', 'Lost', 'Junk'].forEach(k => {
         const el = document.getElementById('chip-cnt-' + k);
         if (el) el.innerText = k === 'All' ? total : myLeads.filter(l => l.status === k).length;
@@ -2632,9 +2678,24 @@ async function addLead(event) {
         if (chipEl) chipEl.classList.toggle('active', statusFilter === k);
       });
 
-      renderWeekChart(myLeads); renderFunnel(myLeads); renderLeaderboard(); renderLeadsTable(); renderPipelineBoard(myLeads); renderAlerts(myLeads);
-      if (isAdminAuthenticated) showAdminPanel();
+      // ==========================================
+      // 🛡️ THE BULLETPROOF RENDERER (CRASH ISOLATION)
+      // ==========================================
+      // अब अगर कोई एक चीज़ खराब होगी, तो वो बाकी ऐप को नहीं रोकेगी!
+      try { renderWeekChart(myLeads); } catch(e) { console.error('Week Chart Error:', e); }
+      try { renderFunnel(myLeads); } catch(e) { console.error('Funnel Error:', e); }
+      try { renderGlobalLeaderboard(); } catch(e) { console.error('Leaderboard Error:', e); }
+      try { renderLeadsTable(); } catch(e) { console.error('Leads Table Error:', e); }
+      try { renderPipelineBoard(myLeads); } catch(e) { console.error('Pipeline Error:', e); }
+      try { renderAlerts(myLeads); } catch(e) { console.error('Alerts Error:', e); }
+      
+      try { 
+          if (typeof isAdminAuthenticated !== 'undefined' && isAdminAuthenticated) showAdminPanel(); 
+      } catch(e) { 
+          console.error('Admin Panel Error:', e); 
+      }
     }
+
     
     function renderWeekChart(myLeads) {
       const days = [];
@@ -3437,8 +3498,8 @@ async function handleCSVImport(event) {
     reader.readAsText(file);
 }
 
-    // ==========================================
-    // BULLETPROOF SWIPE ENGINE (V4 - ULTRA SENSITIVE)
+        // ==========================================
+    // SAFE & SIMPLE SWIPE ENGINE (NO BLACK SCREEN)
     // ==========================================
     (function() {
         let startX = 0;
@@ -3448,25 +3509,16 @@ async function handleCSVImport(event) {
         function isSwipeBlocked(e) {
             let el = e.target;
             if (!el) return false;
-            
+            // फॉर्म, इनपुट या कानबन बोर्ड पर स्वाइप ब्लॉक करें
             if (['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(el.tagName)) return true;
+            if (el.closest('.kanban-board') || el.closest('.modal-content') || el.closest('table') || el.closest('.btn')) return true;
             
-            if (el.closest('.kanban-board') || 
-                el.closest('.modal-content') || 
-                el.closest('table') || 
-                el.closest('.table-responsive') || 
-                el.closest('.btn') || 
-                el.closest('button')) {
-                return true;
-            }
-
+            // टेबल स्क्रॉलिंग फिक्स
             let parent = el;
             while (parent && parent !== document.body) {
                 if (parent.scrollWidth > parent.clientWidth) {
                     let style = window.getComputedStyle(parent);
-                    if (style.overflowX === 'auto' || style.overflowX === 'scroll') {
-                        return true;
-                    }
+                    if (style.overflowX === 'auto' || style.overflowX === 'scroll') return true;
                 }
                 parent = parent.parentElement;
             }
@@ -3482,21 +3534,12 @@ async function handleCSVImport(event) {
         document.addEventListener('touchend', e => {
             if (isSwipeBlocked(e)) return;
             
-            let endX = e.changedTouches[0].clientX;
-            let endY = e.changedTouches[0].clientY;
+            let diffX = e.changedTouches[0].clientX - startX;
+            let diffY = e.changedTouches[0].clientY - startY;
 
-            let diffX = endX - startX;
-            let diffY = endY - startY;
-            
-            // माइनस (-) साइन हटाने के लिए Absolute value
-            let absX = Math.abs(diffX);
-            let absY = Math.abs(diffY);
-
-            // 🎯 V4 MAGIC: एकदम मक्खन (Super Sensitive)
-            // बस 25px का स्वाइप चाहिए, और उँगली थोड़ी ऊपर-नीचे (75px तक) हो जाए तो भी चलेगा!
-            if (absX > 25 && absY < 75) {
+            // अगर स्वाइप लेफ्ट-राइट है (थोड़ा सा 30px का टच भी काम करेगा)
+            if (Math.abs(diffX) > 30 && Math.abs(diffY) < 60) {
                 let availableTabs = appTabs;
-                
                 if (typeof currentUser !== 'undefined' && currentUser !== 'admin') {
                     availableTabs = appTabs.filter(t => t !== 'admin');
                 }
@@ -3510,41 +3553,159 @@ async function handleCSVImport(event) {
                 let currentIndex = availableTabs.indexOf(currentTabName);
                 let nextIndex = currentIndex;
                 
-                let swipeDirection = '';
-                if (diffX < 0 && currentIndex < availableTabs.length - 1) {
-                    nextIndex++;
-                    swipeDirection = 'left';
-                } else if (diffX > 0 && currentIndex > 0) {
-                    nextIndex--;
-                    swipeDirection = 'right';
-                }
+                if (diffX < 0 && currentIndex < availableTabs.length - 1) nextIndex++;
+                else if (diffX > 0 && currentIndex > 0) nextIndex--;
 
-                if (nextIndex !== currentIndex && swipeDirection !== '') {
-                    const nextTabName = availableTabs[nextIndex];
-                    switchTab(nextTabName);
-                    
-                    const targetEl = document.getElementById(`view-${nextTabName}`);
-                    if (targetEl) {
-                        targetEl.classList.remove('tab-content-view'); 
-                        targetEl.style.transition = 'none';
-                        targetEl.style.transform = swipeDirection === 'left' ? 'translateX(100vw)' : 'translateX(-100vw)';
-                        targetEl.style.opacity = '0.5';
-
-                        void targetEl.offsetWidth; 
-
-                        targetEl.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease';
-                        targetEl.style.transform = 'translateX(0)';
-                        targetEl.style.opacity = '1';
-                        
-                        setTimeout(() => {
-                            targetEl.style.transition = '';
-                            targetEl.style.transform = '';
-                        }, 350);
-                    }
+                if (nextIndex !== currentIndex) {
+                    switchTab(availableTabs[nextIndex]); // सीधा सेफ टैब स्विचर कॉल करेगा
                 }
             }
         }, { passive: true });
     })();
+
+
+    // ==========================================
+    // 🚀 SUPABASE GLOBAL LEADERBOARD (MINIMALIST UI)
+    // ==========================================
+    async function renderGlobalLeaderboard() {
+        const filterDropdown = document.getElementById('leaderboard-time-filter');
+        const container = document.getElementById('global-leaderboard-container');
+        if (!filterDropdown || !container) return;
+
+        const filter = filterDropdown.value;
+
+        container.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--primary);">
+            <div style="font-size: 1.5rem; animation: modalPop 0.8s infinite alternate;">⏳</div>
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-top: 8px;">Fetching...</div>
+        </div>`;
+
+        try {
+            // 🛑 APNI URL AUR KEY DAALNA MAT BHOOLNA
+            const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co'; 
+            const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
+
+            const response = await fetch(`${dbUrl}/rest/v1/leads?select=*`, {
+                method: 'GET',
+                headers: {
+                    'apikey': dbKey,
+                    'Authorization': `Bearer ${dbKey}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error('Fetch failed.');
+            const allLeads = await response.json();
+
+            let userStats = {};
+            const now = new Date();
+
+            function isWithinFilter(dateString, filterType) {
+                if (filterType === 'all') return true;
+                if (!dateString) return true;
+
+                try {
+                    let targetDate;
+                    if (String(dateString).includes('/')) {
+                        let parts = String(dateString).split(',')[0].trim().split('/');
+                        targetDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    } else {
+                        targetDate = new Date(dateString); 
+                    }
+                    if (isNaN(targetDate)) return true;
+
+                    let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    let yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+
+                    if (filterType === 'today') return targetDate.getTime() === today.getTime();
+                    if (filterType === 'yesterday') return targetDate.getTime() === yesterday.getTime();
+                    if (filterType === 'week') {
+                        let firstDayOfWeek = new Date(today);
+                        firstDayOfWeek.setDate(today.getDate() - today.getDay());
+                        return targetDate >= firstDayOfWeek;
+                    }
+                    if (filterType === 'month') return targetDate.getMonth() === today.getMonth() && targetDate.getFullYear() === today.getFullYear();
+                    if (filterType === 'year') return targetDate.getFullYear() === today.getFullYear();
+                } catch(e) { return true; }
+                return true;
+            }
+
+            if (allLeads && allLeads.length > 0) {
+                allLeads.forEach(lead => {
+                    let owner = lead.owner || lead.assignedTo || lead.user || lead.addedBy || 'Unknown';
+                    if (!userStats[owner]) userStats[owner] = { name: owner, total: 0, won: 0 };
+
+                    let leadDate = lead.created_at || lead.created || lead.date || ""; 
+                    if (isWithinFilter(leadDate, filter)) {
+                        userStats[owner].total++;
+                        if (lead.status === 'Won' || lead.status === 'Closed' || lead.stage === 'Won' || lead.stage === 'Closed') {
+                            userStats[owner].won++;
+                        }
+                    }
+                });
+            }
+
+            let leaderboard = Object.values(userStats).filter(u => u.total > 0);
+
+            leaderboard.forEach(u => {
+                u.rate = Math.round((u.won / u.total) * 100);
+            });
+
+            leaderboard.sort((a, b) => b.won - a.won || b.rate - a.rate || b.total - a.total);
+
+            if (leaderboard.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 30px 10px; color: var(--text-muted); background: rgba(0,0,0,0.1); border-radius: 12px;">
+                    <div style="font-size: 0.85rem; font-weight: 600;">No activity found.</div>
+                </div>`;
+                return;
+            }
+
+            // 🏆 PREMIUM COMPACT UI RENDER
+            container.innerHTML = '';
+            leaderboard.forEach((user, index) => {
+                let isMe = typeof currentUser !== 'undefined' && user.name === currentUser;
+                
+                // Emoji ki jagah sleek gradient circles
+                let rankBadge = '';
+                if (index === 0) rankBadge = `<div style="width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #F59E0B, #D97706); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.75rem; font-weight: 900; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);">1</div>`;
+                else if (index === 1) rankBadge = `<div style="width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #94A3B8, #64748B); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.75rem; font-weight: 900;">2</div>`;
+                else if (index === 2) rankBadge = `<div style="width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, #B45309, #78350F); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.75rem; font-weight: 900;">3</div>`;
+                else rankBadge = `<div style="width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; font-weight: bold;">${index + 1}</div>`;
+
+                container.innerHTML += `
+                <div style="display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
+                    <div style="margin-right: 12px;">${rankBadge}</div>
+                    
+                    <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(99, 102, 241, 0.1); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; color: var(--primary); margin-right: 12px; text-transform: uppercase;">
+                        ${user.name.substring(0,2)}
+                    </div>
+                    
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                            ${user.name}
+                            ${isMe ? '<span style="font-size: 0.6rem; color: var(--bg-main); background: var(--success); padding: 2px 6px; border-radius: 6px; font-weight: 900; text-transform: uppercase;">YOU</span>' : ''}
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; font-weight: 500;">
+                            ${user.won} Won / ${user.total} Leads • <span style="color: var(--primary); font-weight: 700;">${user.rate}% Rate</span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.2rem; font-weight: 800; color: var(--success); line-height: 1;">${user.won}</div>
+                        <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-top: 4px; letter-spacing: 0.5px;">Won</div>
+                    </div>
+                </div>`;
+            });
+
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--danger); background: rgba(239, 68, 68, 0.1); border-radius: 12px;">
+                <div style="font-weight: bold;">⚠️ Error</div>
+                <div style="font-size: 0.8rem; margin-top: 4px;">${error.message}</div>
+            </div>`;
+        }
+    }
+
 
   </script>
 </body>
