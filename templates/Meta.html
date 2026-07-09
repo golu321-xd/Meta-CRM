@@ -383,11 +383,15 @@
     .empty-state p { margin: 0; font-size: 0.9rem; }
     .empty-state .btn { margin-top: 16px; }
 
-    /* PREMIUM DEEP BLUR MODALS */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(11, 18, 32, 0.45); display: flex; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 16px; animation: overlayIn 0.3s ease; }
+    /* =========================================
+       PREMIUM DEEP BLUR MODALS (FIXED OVERLAP)
+    ========================================= */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(11, 18, 32, 0.55); display: flex; align-items: center; justify-content: center; z-index: 100005 !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 16px; animation: overlayIn 0.3s ease; }
     @keyframes overlayIn { from { opacity: 0; backdrop-filter: blur(0px); } to { opacity: 1; backdrop-filter: blur(12px); } }
-    .modal-content { background: var(--bg-card); padding: 32px; border-radius: 24px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1); }
+    
+    .modal-content { background: var(--bg-card); padding: 32px; border-radius: 24px; width: 100%; max-width: 520px; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1); }
     .modal-content.wide { max-width: 680px; }
+    
     @keyframes modalPop { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
     .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 28px; }
     .won-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
