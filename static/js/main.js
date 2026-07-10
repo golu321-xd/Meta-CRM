@@ -351,6 +351,50 @@ function showToast(type, title, msg, icon) {
         let data = await response.json();
         
         if (response.ok) {
+            
+            // 🔥========= RECOVERY LOGIC START =========🔥
+            const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
+            const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
+            
+            try {
+                // Supabase se check karo ki account delete par laga hai ya nahi
+                let supaRes = await fetch(`${dbUrl}/rest/v1/users?username=eq.${input}&select=deletion_scheduled_at`, {
+                    headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
+                });
+                let supaData = await supaRes.json();
+
+                if (supaData && supaData.length > 0 && supaData[0].deletion_scheduled_at) {
+                    const scheduledDate = new Date(supaData[0].deletion_scheduled_at);
+                    const now = new Date();
+                    const diffHours = (now - scheduledDate) / (1000 * 60 * 60);
+
+                    if (diffHours >= 24) {
+                        // Agar 24 ghante ho gaye hain toh login rok do (Cron job isse delete kar dega)
+                        showToast('error', 'Account Deleted', 'This account has been permanently wiped.');
+                        return; // 🚨 Yahan se code aage nahi jayega
+                    } else {
+                        // 24 Ghante ke andar wapas aaya hai -> Ask for Recovery
+                        const wantToRecover = confirm("🚨 ACCOUNT DELETED 🚨\n\nYeh account delete ho chuka hai. Kya aap isse wapas RECOVER karna chahte hain?");
+                        
+                        if (wantToRecover) {
+                            // Recovery Yes: Flag hata do
+                            await fetch(`${dbUrl}/rest/v1/users?username=eq.${input}`, {
+                                method: 'PATCH',
+                                headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ deletion_scheduled_at: null })
+                            });
+                            showToast('success', 'Account Recovered!', 'Your account has been fully restored.');
+                        } else {
+                            // Recovery No: Login cancel kar do
+                            showToast('info', 'Login Cancelled', 'Account remains scheduled for deletion.');
+                            return; // 🚨 Yahan se code aage nahi jayega (Login blocked)
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Recovery check failed", e);
+            }
+
           currentUser = data.user.username;
           currentUserId = data.user.user_id; // Data cloud se layega
           
@@ -2453,16 +2497,32 @@ function verifyAndDelete() {
 async function finalScheduleDeletion() {
     document.getElementById('modal-delete-confirm').classList.add('hidden');
     
-    if (typeof logActivity === 'function') {
-        await logActivity(`Account deletion scheduled (24h grace period started).`);
-    }
-    
-    showToast('warning', 'Account Scheduled', 'Your account will be permanently deleted in 24 hours. Logging out...');
-    
-    setTimeout(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.reload(); 
-    }, 3200);
-}
+    const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
+    const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
+    const nowIso = new Date().toISOString(); // Abhi ka time
 
+    try {
+        // Supabase me user ko 'Scheduled' mark karo
+        await fetch(`${dbUrl}/rest/v1/users?username=eq.${currentUser}`, {
+            method: 'PATCH',
+            headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deletion_scheduled_at: nowIso })
+        });
+
+        if (typeof logActivity === 'function') {
+            await logActivity(`Account deletion scheduled (24h grace period started).`);
+        }
+        
+        showToast('warning', 'Account Scheduled', 'Your account will be permanently deleted in 24 hours. Logging out...');
+        
+        // 3 second baad automatic logout
+        setTimeout(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.reload(); 
+        }, 3200);
+
+    } catch(e) {
+        showToast('error', 'Error', 'Could not schedule deletion.');
+    }
+}
