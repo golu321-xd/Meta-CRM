@@ -373,9 +373,18 @@ function showToast(type, title, msg, icon) {
                         showToast('error', 'Account Deleted', 'This account has been permanently wiped.');
                         return; // 🚨 Yahan se code aage nahi jayega
                     } else {
-                        // 24 Ghante ke andar wapas aaya hai -> Ask for Recovery
-                        const wantToRecover = confirm("🚨 ACCOUNT DELETED 🚨\n\nYeh account delete ho chuka hai. Kya aap isse wapas RECOVER karna chahte hain?");
-                        
+                        // Browser ka ghatiya pop-up hatakar apna Custom Modal dikhayenge
+const wantToRecover = await new Promise((resolve) => {
+    const modal = document.getElementById('modal-recovery-prompt');
+    modal.classList.remove('hidden'); // Dabba dikhao
+    
+    // Jab user koi button dabayega, tabhi code aage badhega
+    window.resolveRecovery = function(choice) {
+        modal.classList.add('hidden'); // Dabba chupao
+        resolve(choice); // Result wapas bhejo (true ya false)
+    };
+});
+
                         if (wantToRecover) {
                             // Recovery Yes: Flag hata do
                             await fetch(`${dbUrl}/rest/v1/users?username=eq.${input}`, {
