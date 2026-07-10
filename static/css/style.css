@@ -1353,11 +1353,6 @@ nav, .bottom-nav, .mobile-nav, .nav-bar {
   transform: translateX(0);
 }
 
-
-.sidebar-drawer.active {
-  transform: translateX(0); /* क्लास लगते ही बाहर आ जाएगा */
-}
-
 /* 3. Header & Content Styling */
 .sidebar-header {
   padding: 20px;
