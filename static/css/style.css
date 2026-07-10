@@ -1018,28 +1018,42 @@
 }
 
 /* =========================================
-   🚀 PREMIUM FLOATING NAV (SHIFT FIX)
+   🚀 PREMIUM FLOATING NAV (LIGHT & DARK FIX)
 ========================================= */
 nav, .bottom-nav, .mobile-nav, .nav-bar {
     position: fixed !important;
     bottom: 16px !important;
     left: 16px !important;
     right: 16px !important;
-    width: calc(100% - 32px) !important; /* 👈 स्क्रीन के हिसाब से फिक्स चौड़ाई */
-    transform: none !important; /* 🔥 YAHI THI BIMARI! (इसने पट्टी को बाहर जाने से रोक दिया) */
+    width: calc(100% - 32px) !important; /* स्क्रीन के हिसाब से फिक्स चौड़ाई */
+    transform: none !important; 
     margin: 0 !important;
     height: 66px !important;
     border-radius: 24px !important; 
-    background: rgba(15, 23, 42, 0.95) !important; 
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    
+    /* ☀️ Light Mode Glassmorphism (White/Frosted) */
+    background: rgba(255, 255, 255, 0.85) !important; 
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+    
     padding: 4px 8px !important;
     display: flex !important;
     justify-content: space-around !important;
     align-items: center !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
     z-index: 9990 !important;
+    transition: background 0.3s ease, border 0.3s ease !important;
+}
+
+/* 🌙 Dark Mode Override (Navy/Black Glass) */
+[data-theme="dark"] nav, 
+[data-theme="dark"] .bottom-nav, 
+[data-theme="dark"] .mobile-nav, 
+[data-theme="dark"] .nav-bar {
+    background: rgba(15, 23, 42, 0.95) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
 }
 
 [id^="mob-btn-"] {
@@ -1070,6 +1084,7 @@ nav, .bottom-nav, .mobile-nav, .nav-bar {
     font-size: 0.65rem !important;
     font-weight: 700 !important;
 }
+
 
 /* =========================================
    🚀 NEW SQUIRCLE '+' BUTTON (NO COLLISION)
