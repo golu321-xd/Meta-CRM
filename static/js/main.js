@@ -2287,7 +2287,7 @@ async function fetchAndRenderHistory() {
 
   const filterVal = document.getElementById('history-time-filter') ? document.getElementById('history-time-filter').value : 'today';
   
-  // 🔥 ADMIN MAGIC: Bulk Delete Button Inject karna 🔥
+  // 🔥 ADMIN MAGIC: Bulk Delete Button Inject karna
   const filterDiv = document.getElementById('history-time-filter').parentElement;
   if (currentUser === 'admin') {
       if (!document.getElementById('admin-bulk-delete-btn')) {
@@ -2309,7 +2309,6 @@ async function fetchAndRenderHistory() {
   const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
 
   try {
-    // 500 logs fetch karenge taaki filter sahi kaam kare
     const response = await fetch(`${dbUrl}/rest/v1/activity_logs?select=*&order=created_at.desc&limit=500`, {
       method: 'GET',
       headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}`, 'Content-Type': 'application/json' }
@@ -2334,7 +2333,7 @@ async function fetchAndRenderHistory() {
         return true;
     });
     
-    window.currentRenderedLogs = data; // Delete command ke liye data save kar liya
+    window.currentRenderedLogs = data;
 
     if (!data || data.length === 0) {
       container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No activity found for selected time.</p>`;
@@ -2345,7 +2344,6 @@ async function fetchAndRenderHistory() {
     data.forEach(log => {
        const time = new Date(log.created_at).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
        
-       // 🔥 ADMIN MAGIC: Single Delete Button 🔥
        let deleteHtml = '';
        if (currentUser === 'admin') {
            deleteHtml = `<button onclick="adminDeleteSingleLog('${log.id}')" style="background:transparent; border:none; color:var(--danger); cursor:pointer; padding:4px; margin-left:auto; opacity:0.7;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>`;
@@ -2361,7 +2359,6 @@ async function fetchAndRenderHistory() {
                ${deleteHtml}
            </div>
            <span style="color:var(--text-main); display:block; margin-top:4px;">${log.action}</span>
-           
            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:5px;">
              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${time}
            </div>
@@ -2373,41 +2370,29 @@ async function fetchAndRenderHistory() {
   }
 }
 
-// 🗑️ Delete Single Log Function
 async function adminDeleteSingleLog(logId) {
     if (!confirm("Delete this log permanently from database?")) return;
-      // 4. Supabase से Password aur Signup Time Fetch karna 🚀
-  const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
-  const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
-
-  try {
-    const res = await fetch(`${dbUrl}/rest/v1/users?username=eq.${name}&select=password,signup_time`, {
-      headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.length > 0) {
-        window.realUserPassword = data[0].password; 
-        
-        // 🔥 Joined Date set karna
-        if (data[0].signup_time) {
-            const joinDate = new Date(data[0].signup_time).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-            const joinedEl = document.getElementById('sidebarJoinedDate');
-            if(joinedEl) joinedEl.innerText = `Joined: ${joinDate}`;
-        }
-      }
+    const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
+    const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
+    
+    try {
+        await fetch(`${dbUrl}/rest/v1/activity_logs?id=eq.${logId}`, {
+            method: 'DELETE',
+            headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
+        });
+        showToast('success', 'Deleted', 'Log removed permanently.');
+        fetchAndRenderHistory();
+    } catch(e) {
+        showToast('error', 'Error', 'Failed to delete log.');
     }
-  } catch (e) {
-    console.error("Failed to fetch details from Supabase");
-  }
+}
 
-// 🗑️ Bulk Delete Logs Function
 async function adminBulkDeleteLogs() {
     if (!window.currentRenderedLogs || window.currentRenderedLogs.length === 0) return;
     const filterSelect = document.getElementById('history-time-filter');
     const filterText = filterSelect.options[filterSelect.selectedIndex].text;
     
-    if (!confirm(`⚠️ WARNING! Permanently delete ALL ${window.currentRenderedLogs.length} logs for "${filterText}"? This action cannot be undone.`)) return;
+    if (!confirm(`⚠️ WARNING! Permanently delete ALL ${window.currentRenderedLogs.length} logs for "${filterText}"?`)) return;
 
     const ids = window.currentRenderedLogs.map(l => l.id).join(',');
     const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
@@ -2418,14 +2403,14 @@ async function adminBulkDeleteLogs() {
             method: 'DELETE',
             headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
         });
-        showToast('success', 'Bulk Deleted', `${window.currentRenderedLogs.length} logs removed from Supabase.`);
+        showToast('success', 'Bulk Deleted', `${window.currentRenderedLogs.length} logs removed.`);
         fetchAndRenderHistory();
     } catch(e) {
         showToast('error', 'Error', 'Failed to bulk delete logs.');
     }
 }
 
-                // ==========================================
+// ==========================================
 // 🚨 ACCOUNT DELETION SYSTEM (24H LOGIC)
 // ==========================================
 
@@ -2450,12 +2435,10 @@ function verifyAndDelete() {
     const i = document.getElementById('del-userid').value;
     const p = document.getElementById('del-password').value;
     
-    // Strict Verification
     if(u !== currentUser) { showToast('error', 'Verification Failed', 'Incorrect Username entered.'); return; }
     if(i !== currentUserId) { showToast('error', 'Verification Failed', 'Incorrect User ID entered.'); return; }
     if(p !== window.realUserPassword) { showToast('error', 'Verification Failed', 'Incorrect Password entered.'); return; }
     
-    // Agar sab sahi hai, toh 24h wala warning dikhao
     closeDeleteAccountModal();
     document.getElementById('modal-delete-confirm').classList.remove('hidden');
 }
@@ -2463,14 +2446,12 @@ function verifyAndDelete() {
 async function finalScheduleDeletion() {
     document.getElementById('modal-delete-confirm').classList.add('hidden');
     
-    // 🔥 Activity History me action record karo
     if (typeof logActivity === 'function') {
         await logActivity(`Account deletion scheduled (24h grace period started).`);
     }
     
     showToast('warning', 'Account Scheduled', 'Your account will be permanently deleted in 24 hours. Logging out...');
     
-    // 3 second baad automatic logout
     setTimeout(() => {
         localStorage.clear();
         sessionStorage.clear();
