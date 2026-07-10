@@ -727,21 +727,14 @@
       </div>
     </div>
   </div>
+  
 
-  <!-- SPLASH SCREEN FIX (CRASH PROOF) -->
-<script>
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      const splash = document.getElementById('premium-splash');
-      if (splash) splash.classList.add('hidden');
-      
-      const ptrLoader = document.getElementById('ptr-loader');
-      if (ptrLoader) ptrLoader.style.display = 'none';
-    }, 800);
-  });
-</script>
+    </div>
+  </div> <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-</script>
+</body>
+</html>
+
 
 </body>
 </html>
