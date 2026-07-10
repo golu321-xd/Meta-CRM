@@ -1025,6 +1025,297 @@
 .fab:active svg {
   transform: rotate(90deg); /* टैप करते ही प्लस का निशान घूमेगा */
 }
+
+/* =========================================
+   🚀 PREMIUM FLOATING NAV (SHIFT FIX)
+========================================= */
+nav, .bottom-nav, .mobile-nav, .nav-bar {
+    position: fixed !important;
+    bottom: 16px !important;
+    left: 16px !important;
+    right: 16px !important;
+    width: calc(100% - 32px) !important; /* 👈 स्क्रीन के हिसाब से फिक्स चौड़ाई */
+    transform: none !important; /* 🔥 YAHI THI BIMARI! (इसने पट्टी को बाहर जाने से रोक दिया) */
+    margin: 0 !important;
+    height: 66px !important;
+    border-radius: 24px !important; 
+    background: rgba(15, 23, 42, 0.95) !important; 
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    padding: 4px 8px !important;
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    z-index: 9990 !important;
+}
+
+[id^="mob-btn-"] {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 52px !important;
+    border-radius: 16px !important;
+    color: var(--text-muted) !important;
+    transition: all 0.3s ease !important;
+    background: transparent !important;
+}
+
+[id^="mob-btn-"].active {
+    background: rgba(99, 102, 241, 0.15) !important; 
+    color: var(--primary) !important;
+}
+
+/* 4. Icons and Text Sizing */
+[id^="mob-btn-"] svg {
+    width: 20px !important;
+    height: 20px !important;
+    margin-bottom: 3px !important;
+}
+[id^="mob-btn-"] span {
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+}
+
+/* =========================================
+   🚀 NEW SQUIRCLE '+' BUTTON (NO COLLISION)
+========================================= */
+.fab {
+    position: fixed !important;
+    bottom: 95px !important; 
+    right: 16px !important;
+    width: 52px !important;  
+    height: 52px !important;
+    border-radius: 18px !important; /* 👈 Apple Style Rounded Square */
+    background: linear-gradient(135deg, #a855f7, #6366f1) !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4) !important;
+    z-index: 9999 !important;
+    border: none !important;
+}
+
+.fab svg {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+@keyframes fab-breathing-glow {
+  0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4), 0 8px 20px rgba(99, 102, 241, 0.3); }
+  100% { box-shadow: 0 0 15px 4px rgba(99, 102, 241, 0), 0 10px 25px rgba(168, 85, 247, 0.4); transform: scale(1.02); }
+}
+    
+.main-content {
+    padding-bottom: 110px !important;
+}
+
+    /* =========================================
+   🚀 SPLASH SCREEN CSS (PREMIUM ANIMATIONS)
+========================================= */
+.splash-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #0B0F19; /* एकदम डार्क प्रीमियम नेवी ब्लू */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+}
+
+/* जब पेज लोड हो जाएगा तो ये क्लास इसे मक्खन की तरह गायब करेगी */
+.splash-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.05); /* जाते-जाते हल्का सा ज़ूम इफ़ेक्ट */
+}
+
+.splash-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Glowing Logo Animation */
+.splash-logo-box {
+    width: 76px;
+    height: 76px;
+    margin-bottom: 24px;
+    border-radius: 22px; /* Squircle Shape */
+    background: linear-gradient(135deg, #a855f7, #6366f1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    animation: floating-glow 2s infinite alternate ease-in-out;
+}
+
+.splash-icon {
+    width: 36px;
+    height: 36px;
+}
+
+@keyframes floating-glow {
+    0% { transform: translateY(0px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+    100% { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(168, 85, 247, 0.6); }
+}
+
+/* Typography */
+.splash-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    letter-spacing: 1px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.splash-subtitle {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 0 0 40px 0;
+}
+
+/* Sleek Apple-style Loader */
+.splash-loader-track {
+    width: 160px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.splash-loader-bar {
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #a855f7, #6366f1, transparent);
+    border-radius: 10px;
+    animation: loading-swipe 1.5s infinite ease-in-out;
+}
+
+@keyframes loading-swipe {
+    0% { left: -50%; }
+    100% { left: 100%; }
+}
+
+/* =========================================
+   🚀 COMPACT PREMIUM TOAST (WHITE BOX & LINE FIX)
+========================================= */
+#toast-stack {
+    position: fixed !important;
+    top: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 90% !important;
+    max-width: 320px !important; /* 👈 साइज़ एकदम छोटा और परफेक्ट कर दिया */
+    pointer-events: none !important;
+}
+
+.premium-toast {
+    position: relative !important;
+    overflow: hidden !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
+    animation: toast-slide-down 0.4s ease-out forwards !important;
+    pointer-events: auto !important;
+}
+
+.premium-toast.leaving {
+    animation: toast-fade-out 0.3s forwards !important;
+}
+
+/* Icon Box */
+.toast-icon-box {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+.premium-toast.success .toast-icon-box { background: rgba(16, 185, 129, 0.2) !important; color: #10B981 !important; }
+.premium-toast.error .toast-icon-box { background: rgba(239, 68, 68, 0.2) !important; color: #EF4444 !important; }
+.toast-icon-box svg { width: 18px !important; height: 18px !important; }
+
+/* Text Content */
+.toast-content { flex: 1 !important; }
+.toast-title { font-size: 0.95rem !important; font-weight: 700 !important; color: #fff !important; margin: 0 0 2px 0 !important; }
+.toast-message { font-size: 0.75rem !important; color: #94A3B8 !important; margin: 0 !important; display: flex !important; align-items: center !important; }
+
+/* Cool ID Badge */
+.toast-id-badge {
+    background: rgba(99, 102, 241, 0.2) !important;
+    color: #818CF8 !important;
+    padding: 2px 6px !important;
+    border-radius: 6px !important;
+    font-size: 0.65rem !important;
+    font-weight: 800 !important;
+    margin-right: 6px !important;
+}
+
+/* ❌ White Box Issue Fixed (Close Button) */
+.toast-close {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #64748B !important;
+    padding: 4px !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    -webkit-appearance: none !important;
+}
+.toast-close:hover { color: #fff !important; }
+.toast-close svg { width: 16px !important; height: 16px !important; }
+
+/* ⏳ Progress Line (Timer Bar) */
+.toast-progress {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    height: 3px !important; /* लाइन की मोटाई */
+    background: #10B981 !important; /* सक्सेस के लिए ग्रीन लाइन */
+    animation: toast-progress-run 3.2s linear forwards !important;
+}
+.premium-toast.error .toast-progress { background: #EF4444 !important; /* एरर के लिए रेड लाइन */ }
+
+/* Animations */
+@keyframes toast-progress-run { 0% { width: 100%; } 100% { width: 0%; } }
+@keyframes toast-slide-down { 0% { opacity: 0; transform: translateY(-20px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes toast-fade-out { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-20px); } }
     
   </style>
 </head>
@@ -1032,10 +1323,24 @@
 
   <div id="ptr-loader"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg></div>
   
-  <div id="boot-loader">
-    <div class="boot-logo"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16a2 2 0 0 1 2 2v5a3 3 0 0 1-3 3h-2.2a2 2 0 0 1-1.8-1.1L13.6 15a2 2 0 0 0-3.2 0l-1.4 2.9A2 2 0 0 1 7.2 19H5a3 3 0 0 1-3-3v-5a2 2 0 0 1 2-2Z"/><circle cx="8" cy="13" r="1.5"/><circle cx="16" cy="13" r="1.5"/></svg> Meta CRM</div>
-    <div class="boot-ring"></div>
-  </div>
+      <div id="premium-splash" class="splash-container">
+        <div class="splash-content">
+            <div class="splash-logo-box">
+                <svg class="splash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 4s-4 0-6 3-3 7-3 7 1 4 3 4h12c2 0 3-4 3-4s-1-4-3-7-6-3-6-3z"></path>
+                    <circle cx="9" cy="12" r="2"></circle>
+                    <circle cx="15" cy="12" r="2"></circle>
+                </svg>
+            </div>
+            
+            <h1 class="splash-title">Meta CRM</h1>
+            <p class="splash-subtitle">Enterprise Edition</p>
+            
+            <div class="splash-loader-track">
+                <div class="splash-loader-bar"></div>
+            </div>
+        </div>
+    </div>
 
   <div id="toast-stack"></div>
   <div id="confetti-holder"></div>
@@ -1641,6 +1946,17 @@
   </div>
 
   <script>
+
+    // पेज लोड होने पर लोडिंग स्क्रीन को मक्खन की तरह छुपाना
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const splash = document.getElementById('premium-splash');
+        if (splash) {
+            splash.classList.add('hidden');
+        }
+    }, 1500); // 1.5 सेकंड तक लोडिंग दिखेगी, आप चाहें तो इसे कम/ज़्यादा कर सकते हैं
+});
+
     /* ---------- INLINE SVG ICON LIBRARY (mirrors static HTML icons; used for all JS-rendered markup) ---------- */
     const ICON_LIB = {
       "fa-solid fa-vr-cardboard": `<path d="M4 9h16a2 2 0 0 1 2 2v5a3 3 0 0 1-3 3h-2.2a2 2 0 0 1-1.8-1.1L13.6 15a2 2 0 0 0-3.2 0l-1.4 2.9A2 2 0 0 1 7.2 19H5a3 3 0 0 1-3-3v-5a2 2 0 0 1 2-2Z"/><circle cx="8" cy="13" r="1.5"/><circle cx="16" cy="13" r="1.5"/>`,
@@ -1745,10 +2061,13 @@
         await fetchAllLeadsFromDatabase();
         
         switchTab('dashboard');
-        showToast('success', 'Welcome back', `Signed in as ${currentUser}`, 'fa-solid fa-circle-check');
-        document.getElementById('boot-loader').classList.add('hide'); // Atkega nahi
+        let displayId = (typeof currentUserId !== 'undefined' && currentUserId) ? currentUserId : '0000';
+    let welcomeMsg = `<span class="toast-id-badge">ID: ${displayId}</span> You have signed in successfully.`;
+    showToast('success', `Welcome, ${currentUser}!`, welcomeMsg);
+
+        document.getElementById('premium-splash')?.classList.add('hidden');
       } else {
-        document.getElementById('boot-loader').classList.add('hide');
+        document.getElementById('premium-splash')?.classList.add('hidden');
         document.getElementById('auth-screen').classList.remove('hidden');
       }
 
@@ -1813,27 +2132,47 @@
     /* ==========================================================
        TOASTS
     ========================================================== */
+    // ==========================================
+    // 🚀 PREMIUM TOAST (WITH YOUR ORIGINAL LOGIC)
+    // ==========================================
     function showToast(type, title, msg, icon) {
       const stack = document.getElementById('toast-stack');
+      if (!stack) return;
+      
       const el = document.createElement('div');
-      el.className = `toast ${type}`;
+      el.className = `premium-toast ${type}`; // 👈 यहाँ नया क्लास लगा दिया
+      
       const icons = { success: 'fa-solid fa-circle-check', error: 'fa-solid fa-circle-xmark', warning: 'fa-solid fa-triangle-exclamation', info: 'fa-solid fa-circle-info' };
+      
+      // आपके ic() वाले लॉजिक के साथ नया HTML
       el.innerHTML = `
-        <span class="t-icon">${ic(icon || icons[type] || icons.info)}</span>
-        <div class="t-body"><div class="t-title">${title}</div><div class="t-msg">${msg || ''}</div></div>
-        <button class="t-close" onclick="dismissToast(this.parentElement)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
-        <div class="t-progress"></div>
+        <div class="toast-icon-box">
+            ${ic(icon || icons[type] || icons.info)}
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${msg || ''}</div>
+        </div>
+        <button class="toast-close" onclick="dismissToast(this.parentElement)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+        <div class="toast-progress"></div>
       `;
+      
       stack.appendChild(el);
+      
+      // आपका ओरिजिनल टाइमर लॉजिक
       const timer = setTimeout(() => dismissToast(el), 3200);
       el._timer = timer;
     }
+
     function dismissToast(el) {
       if (!el || el.classList.contains('leaving')) return;
       clearTimeout(el._timer);
       el.classList.add('leaving');
-      setTimeout(() => el.remove(), 280);
+      setTimeout(() => el.remove(), 300); // 👈 एनीमेशन के हिसाब से टाइमिंग सेट कर दी
     }
+
 
     /* ==========================================================
        RIPPLE EFFECT ON EVERY CLICK
