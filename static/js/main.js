@@ -2376,20 +2376,30 @@ async function fetchAndRenderHistory() {
 // 🗑️ Delete Single Log Function
 async function adminDeleteSingleLog(logId) {
     if (!confirm("Delete this log permanently from database?")) return;
-    const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
-    const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
-    
-    try {
-        await fetch(`${dbUrl}/rest/v1/activity_logs?id=eq.${logId}`, {
-            method: 'DELETE',
-            headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
-        });
-        showToast('success', 'Deleted', 'Log removed permanently.');
-        fetchAndRenderHistory();
-    } catch(e) {
-        showToast('error', 'Error', 'Failed to delete log.');
+      // 4. Supabase से Password aur Signup Time Fetch karna 🚀
+  const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
+  const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
+
+  try {
+    const res = await fetch(`${dbUrl}/rest/v1/users?username=eq.${name}&select=password,signup_time`, {
+      headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.length > 0) {
+        window.realUserPassword = data[0].password; 
+        
+        // 🔥 Joined Date set karna
+        if (data[0].signup_time) {
+            const joinDate = new Date(data[0].signup_time).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            const joinedEl = document.getElementById('sidebarJoinedDate');
+            if(joinedEl) joinedEl.innerText = `Joined: ${joinDate}`;
+        }
+      }
     }
-}
+  } catch (e) {
+    console.error("Failed to fetch details from Supabase");
+  }
 
 // 🗑️ Bulk Delete Logs Function
 async function adminBulkDeleteLogs() {
@@ -2414,3 +2424,57 @@ async function adminBulkDeleteLogs() {
         showToast('error', 'Error', 'Failed to bulk delete logs.');
     }
 }
+
+                // ==========================================
+// 🚨 ACCOUNT DELETION SYSTEM (24H LOGIC)
+// ==========================================
+
+function openDeleteAccountModal() {
+    toggleSidebar(); // Pehle sidebar band karo
+    const modal = document.getElementById('modal-delete-account');
+    if(modal) {
+        document.getElementById('del-username').value = '';
+        document.getElementById('del-userid').value = '';
+        document.getElementById('del-password').value = '';
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeDeleteAccountModal() {
+    const modal = document.getElementById('modal-delete-account');
+    if(modal) modal.classList.add('hidden');
+}
+
+function verifyAndDelete() {
+    const u = document.getElementById('del-username').value;
+    const i = document.getElementById('del-userid').value;
+    const p = document.getElementById('del-password').value;
+    
+    // Strict Verification
+    if(u !== currentUser) { showToast('error', 'Verification Failed', 'Incorrect Username entered.'); return; }
+    if(i !== currentUserId) { showToast('error', 'Verification Failed', 'Incorrect User ID entered.'); return; }
+    if(p !== window.realUserPassword) { showToast('error', 'Verification Failed', 'Incorrect Password entered.'); return; }
+    
+    // Agar sab sahi hai, toh 24h wala warning dikhao
+    closeDeleteAccountModal();
+    document.getElementById('modal-delete-confirm').classList.remove('hidden');
+}
+
+async function finalScheduleDeletion() {
+    document.getElementById('modal-delete-confirm').classList.add('hidden');
+    
+    // 🔥 Activity History me action record karo
+    if (typeof logActivity === 'function') {
+        await logActivity(`Account deletion scheduled (24h grace period started).`);
+    }
+    
+    showToast('warning', 'Account Scheduled', 'Your account will be permanently deleted in 24 hours. Logging out...');
+    
+    // 3 second baad automatic logout
+    setTimeout(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.reload(); 
+    }, 3200);
+}
+
