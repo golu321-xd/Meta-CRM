@@ -688,40 +688,46 @@
         </span>
       </div>
 
-      <!-- 4. User Profile Section (With Avatar & Password) -->
-      <div class="sidebar-profile-card">
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; font-weight: 700; letter-spacing: 0.5px;">ACCOUNT DETAILS</div>
-        
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
-          <div id="sidebarAvatar" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: 800; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4);">U</div>
-          <div>
-            <div class="profile-value" id="sidebarUserName" style="font-size: 1.1rem;">User</div>
-            <div class="profile-label" id="sidebarUserId" style="font-size: 0.8rem;">ID: ----</div>
+              <!-- 5. User Profile Card (WITH JOIN DATE) -->
+        <div class="sidebar-profile-card">
+          <div class="profile-row">
+             <div style="display:flex; align-items:center; gap:12px;">
+                <div id="sidebarAvatar" style="width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, var(--primary), var(--primary-2)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:1.2rem; box-shadow:0 4px 15px var(--primary-soft);">U</div>
+                <div>
+                   <div id="sidebarUserName" style="font-weight:700; font-size:1rem; color:var(--text-main);">User</div>
+                   <div id="sidebarUserId" style="font-size:0.75rem; color:var(--text-muted);">ID: ----</div>
+                   <!-- 🔥 NEW: Joined Date -->
+                   <div id="sidebarJoinedDate" style="font-size:0.65rem; color:var(--primary); margin-top:2px; font-weight:700;">Joined: Fetching...</div>
+                </div>
+             </div>
           </div>
-        </div>
-        
-        <div class="profile-row" style="display: flex; align-items: center; justify-content: space-between;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span class="profile-label">Pass:</span>
-            <span class="profile-value" id="sidebarUserPass" style="letter-spacing: 3px; transform: translateY(2px);">••••••••</span>
+          <div class="profile-row" style="margin-top:12px; border-top:1px solid rgba(148,163,184,0.1); padding-top:12px;">
+             <span class="profile-label">Pass:</span>
+             <div style="display:flex; align-items:center; gap:10px;">
+                <span id="sidebarUserPass" class="profile-value" style="letter-spacing:3px;">••••••••</span>
+                <button onclick="toggleSidebarPassword()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; padding:4px;">
+                   <svg id="sidebarEyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+             </div>
           </div>
-          <button onclick="toggleSidebarPassword()" style="background:none; border:none; padding:0; color:var(--text-muted);">
-            <svg id="sidebarEyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          </button>
         </div>
       </div>
-    </div>
 
-    <!-- Sidebar Footer (Fixed Cut-off Issue) -->
-    <div class="sidebar-footer" style="padding: 20px 20px 40px 20px;">
-      <button class="btn btn-danger clickable" style="width: 100%; margin-bottom: 10px; border-radius: 10px; font-weight: 700;" onclick="sidebarLogout()">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout
-      </button>
-      <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; letter-spacing: 1px;">
-        APP VERSION 1.1
+      <!-- Footer Action Buttons (Logout + Delete) -->
+      <div class="sidebar-footer" style="padding: 16px 20px; border-top: 1px solid rgba(148, 163, 184, 0.1);">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+           <button class="btn btn-danger" onclick="sidebarLogout()" style="width:100%; display:flex; justify-content:center; align-items:center; gap:8px;">
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout
+           </button>
+           
+           <!-- 🔥 NEW: Delete Account Button -->
+           <button onclick="openDeleteAccountModal()" style="width:100%; display:flex; justify-content:center; align-items:center; gap:8px; background:rgba(239, 68, 68, 0.05); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.15); padding:10px; border-radius:12px; font-size:0.8rem; font-weight:700; cursor:pointer; transition:0.2s;">
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete Account
+           </button>
+        </div>
+        <div style="text-align: center; margin-top: 12px; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1px;">APP VERSION 1.2</div>
       </div>
-    </div>
-  </div>
+
 
   <!-- ============ HISTORY MODAL (CLICK OUTSIDE TO CLOSE FIX) ============ -->
   <div id="modal-history" class="modal-overlay hidden" style="z-index: 9999999;" onclick="if(event.target===this) closeHistoryModal()">
@@ -755,6 +761,48 @@
 
     </div>
   </div>
+
+      <!-- ============ DELETE ACCOUNT (VERIFICATION) MODAL ============ -->
+  <div id="modal-delete-account" class="modal-overlay hidden" style="z-index: 9999999;" onclick="if(event.target===this) closeDeleteAccountModal()">
+    <div class="modal-content" style="max-height: 85vh; border: 1px solid rgba(239, 68, 68, 0.3); box-shadow: 0 10px 40px rgba(239, 68, 68, 0.15);">
+      <div style="text-align:center; margin-bottom: 20px;">
+         <div style="width:50px; height:50px; background:rgba(239, 68, 68, 0.1); color:var(--danger); border-radius:50%; display:flex; justify-content:center; align-items:center; margin:0 auto 10px;">
+           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+         </div>
+         <h2 style="color:var(--danger); margin:0;">Account Deletion</h2>
+         <p style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">Please verify your identity to proceed.</p>
+      </div>
+      
+      <div style="display:flex; flex-direction:column; gap:12px;">
+         <input type="text" id="del-username" placeholder="Enter Username" autocomplete="off" style="padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:var(--text-main); outline:none;">
+         <input type="text" id="del-userid" placeholder="Enter User ID" autocomplete="off" style="padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:var(--text-main); outline:none;">
+         <input type="password" id="del-password" placeholder="Enter Password" autocomplete="off" style="padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:var(--text-main); outline:none;">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:20px;">
+         <button onclick="closeDeleteAccountModal()" style="flex:1; padding:12px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text-main); cursor:pointer;">Cancel</button>
+         <button onclick="verifyAndDelete()" style="flex:1; padding:12px; border-radius:8px; background:var(--danger); border:none; color:#fff; font-weight:bold; cursor:pointer; box-shadow:0 4px 15px rgba(239,68,68,0.4);">Verify & Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 24H CONFIRMATION MODAL ============ -->
+  <div id="modal-delete-confirm" class="modal-overlay hidden" style="z-index: 9999999;">
+    <div class="modal-content" style="max-height: 85vh; text-align:center; border: 1px solid rgba(239, 68, 68, 0.5); box-shadow: 0 10px 50px rgba(239, 68, 68, 0.2);">
+      <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" style="margin-bottom:15px;"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      <h2 style="color:var(--danger); margin:0;">Are you absolutely sure?</h2>
+      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:10px; line-height:1.5;">
+         Your account will be scheduled for permanent deletion. <br><br>
+         <strong style="color:var(--text-main);">If you login again within 24 hours, the deletion process will be cancelled.</strong><br><br>
+         After 24 hours, all your data will be permanently wiped.
+      </p>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:25px;">
+         <button onclick="finalScheduleDeletion()" style="width:100%; padding:14px; border-radius:8px; background:var(--danger); border:none; color:#fff; font-weight:bold; cursor:pointer; box-shadow:0 4px 15px rgba(239,68,68,0.4);">Yes, Schedule Deletion</button>
+         <button onclick="document.getElementById('modal-delete-confirm').classList.add('hidden')" style="width:100%; padding:14px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.1); color:var(--text-main); cursor:pointer;">Cancel & Keep Account</button>
+      </div>
+    </div>
+  </div>
+
   
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
