@@ -2271,6 +2271,14 @@ function openHistoryModal() {
   }
 }
 
+// History Modal band karne ka function
+function closeHistoryModal() {
+  const modal = document.getElementById('modal-history');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
 window.currentRenderedLogs = [];
 
 async function fetchAndRenderHistory() {
