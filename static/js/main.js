@@ -373,18 +373,43 @@ function showToast(type, title, msg, icon) {
                         showToast('error', 'Account Deleted', 'This account has been permanently wiped.');
                         return; // 🚨 Yahan se code aage nahi jayega
                     } else {
-                        // Browser ka ghatiya pop-up hatakar apna Custom Modal dikhayenge
+                        // Browser ka ghatiya pop-up hatakar apna Custom Modal (with LIVE TIMER) dikhayenge
 const wantToRecover = await new Promise((resolve) => {
     const modal = document.getElementById('modal-recovery-prompt');
+    const timerElement = document.getElementById('recovery-countdown');
     modal.classList.remove('hidden'); // Dabba dikhao
     
-    // Jab user koi button dabayega, tabhi code aage badhega
+    // 1. Exact deletion time nikalo (Schedule date + 24 Hours)
+    const exactDeletionTime = new Date(scheduledDate.getTime() + (24 * 60 * 60 * 1000));
+    
+    // 2. Har 1 second me time update karne wala function
+    const countdownInterval = setInterval(() => {
+        const currentTime = new Date();
+        const timeDiff = exactDeletionTime - currentTime;
+
+        if (timeDiff <= 0) {
+            // Agar time khatam ho gaya
+            clearInterval(countdownInterval);
+            if(timerElement) timerElement.innerText = "00:00:00";
+        } else {
+            // Hours, Minutes, Seconds nikalo
+            const h = Math.floor((timeDiff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
+            const m = Math.floor((timeDiff / 1000 / 60) % 60).toString().padStart(2, '0');
+            const s = Math.floor((timeDiff / 1000) % 60).toString().padStart(2, '0');
+            
+            // Screen par dikhao (Format: 23:59:59)
+            if(timerElement) timerElement.innerText = `${h}:${m}:${s}`;
+        }
+    }, 1000); // 1000ms = 1 second
+
+    // 3. Jab user koi button dabayega, tabhi code aage badhega
     window.resolveRecovery = function(choice) {
+        clearInterval(countdownInterval); // 🔥 Background Timer rokna zaroori hai!
         modal.classList.add('hidden'); // Dabba chupao
-        resolve(choice); // Result wapas bhejo (true ya false)
+        resolve(choice); // Result wapas bhejo
     };
 });
-
+                        
                         if (wantToRecover) {
                             // Recovery Yes: Flag hata do
                             await fetch(`${dbUrl}/rest/v1/users?username=eq.${input}`, {
