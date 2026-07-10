@@ -2094,3 +2094,113 @@ async function handleCSVImport(event) {
             </div>`;
         }
     }
+
+/* ==================================================
+   3-DOTS MENU & SIDEBAR LOGIC (PART 3)
+   ================================================== */
+
+// 1. Sidebar को खोलना और बंद करना
+function toggleSidebar() {
+  const overlay = document.getElementById('sidebarOverlay');
+  const sidebar = document.getElementById('appSidebar');
+  
+  overlay.classList.toggle('active');
+  sidebar.classList.toggle('active');
+  
+  // जब साइडबार खुले, तो तुरंत Supabase (या currentUser) से प्रोफाइल डेटा अपडेट करो
+  if (sidebar.classList.contains('active')) {
+    updateSidebarProfile();
+  }
+}
+
+// 2. User की डिटेल लोड करना (Supabase Data Sync)
+let isSidebarPasswordVisible = false;
+let currentSidebarPassword = ""; // यहाँ आपका पासवर्ड सेव रहेगा
+
+function updateSidebarProfile() {
+  // अगर आपका ऐप currentUser नाम का वेरिएबल इस्तेमाल करता है, तो हम वहाँ से डेटा उठाएंगे
+  let name = "Unknown";
+  let id = "----";
+  
+  if (typeof currentUser !== 'undefined' && currentUser) {
+    name = currentUser.username || currentUser.name || "User";
+    id = currentUser.userid || currentUser.id || "----";
+    currentSidebarPassword = currentUser.password || "No Pass"; 
+  }
+
+  document.getElementById('sidebarUserName').innerText = name;
+  document.getElementById('sidebarUserId').innerText = id;
+  
+  // जब भी साइडबार खुले, पासवर्ड हमेशा छुपा हुआ होना चाहिए (••••••••)
+  isSidebarPasswordVisible = false;
+  document.getElementById('sidebarUserPass').innerText = "••••••••";
+  document.getElementById('sidebarUserPass').style.letterSpacing = "3px";
+  document.getElementById('sidebarUserPass').style.transform = "translateY(2px)";
+}
+
+// 3. पासवर्ड देखने (Eye) वाले बटन का जादू
+function toggleSidebarPassword() {
+  const passElement = document.getElementById('sidebarUserPass');
+  const eyeIcon = document.getElementById('sidebarEyeIcon');
+  
+  if (!isSidebarPasswordVisible) {
+    // पासवर्ड दिखाओ
+    passElement.innerText = currentSidebarPassword; 
+    passElement.style.letterSpacing = "1px"; 
+    passElement.style.transform = "translateY(0)";
+    
+    // आइकॉन को 'बंद आँख' में बदलो
+    eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+    isSidebarPasswordVisible = true;
+  } else {
+    // वापस पासवर्ड छुपाओ
+    passElement.innerText = "••••••••"; 
+    passElement.style.letterSpacing = "3px";
+    passElement.style.transform = "translateY(2px)";
+    
+    // आइकॉन को 'खुली आँख' में बदलो
+    eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+    isSidebarPasswordVisible = false;
+  }
+}
+
+// 4. Sidebar से डार्क मोड बदलना
+function toggleThemeFromSidebar(checkbox) {
+  const isDark = checkbox.checked;
+  // बाहर वाले पुराने डार्क मोड स्विच को भी अपडेट कर दो
+  const mainSwitch = document.getElementById('theme-switch');
+  if (mainSwitch) mainSwitch.checked = isDark;
+  
+  // थीम बदलो
+  document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  localStorage.setItem('meta_crm_theme', isDark ? 'dark' : 'light');
+}
+
+// 5. PWA - Install App बटन का लॉजिक
+let deferredInstallPrompt = null;
+
+// ब्राउज़र के अपने-आप आने वाले पॉपअप को रोककर उसे सेव कर लो
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+function triggerAppInstall() {
+  if (deferredInstallPrompt) {
+    // अपना बटन दबाने पर असली इंस्टॉल पॉपअप दिखाओ
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then((choiceResult) => {
+      deferredInstallPrompt = null; // एक बार पूछ लिया तो क्लियर कर दो
+    });
+  } else {
+    alert("ऐप पहले से इंस्टॉल है या आप ब्राउज़र से सीधे 'Add to Home Screen' कर सकते हैं।");
+  }
+}
+
+// 6. History बटन (यह एडमिन टैब खोल देगा)
+function openHistoryTab() {
+  toggleSidebar(); // पहले साइडबार को मक्खन की तरह बंद करो
+  if (typeof switchTab === 'function') {
+    switchTab('admin'); // एडमिन टैब (या जहाँ आपकी हिस्ट्री है) वहाँ भेज दो
+  }
+}
