@@ -448,17 +448,41 @@
                   </div>
                 </div>
 
-                <div style="display: flex; gap: 8px; width: 100%; align-items: center; background: rgba(0,0,0,0.15); padding: 10px; border-radius: 10px; border: 1px solid var(--border);">
-                  <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; padding-left: 5px;">Export:</span>
-                  <button class="btn btn-primary btn-sm clickable" onclick="exportMyDeals('Open')">
-  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-  Open
-                  </button>
-                
-                  <button class="btn btn-success btn-sm" onclick="exportMyDeals('Closed')" style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 8px;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><path d="M12 15V3"/></svg> Won</button>
-                  <button class="btn btn-danger btn-sm" onclick="exportMyDeals('Lost')" style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 8px;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><path d="M12 15V3"/></svg> Lost</button>
-                  <button class="btn btn-secondary btn-sm" onclick="exportMyLeadsCsv()" style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 8px;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/></svg> All</button>
-                </div>
+                <!-- ============ RESPONSIVE EXPORT SECTION ============ -->
+<div style="margin: 15px 0; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 14px; border-radius: 16px;">
+  
+  <!-- Export Label -->
+  <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+     QUICK EXPORT
+  </div>
+  
+  <!-- Smart Grid Layout (2x2 on Mobile) -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+    
+    <!-- OPEN BUTTON -->
+    <button onclick="exportMyDeals('Open')" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 10px; padding: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Open
+    </button>
+
+    <!-- WON (CLOSED) BUTTON -->
+    <button onclick="exportMyDeals('Closed')" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Won
+    </button>
+
+    <!-- LOST BUTTON -->
+    <button onclick="exportMyDeals('Lost')" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Lost
+    </button>
+
+    <!-- ALL BUTTON -->
+    <button onclick="exportMyLeadsCsv()" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s;">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> All
+    </button>
+
+  </div>
+</div>
+<!-- ======================================================= -->
                 
               </div>
             <div class="chip-row" id="status-filter-chips"></div>
