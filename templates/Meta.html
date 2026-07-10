@@ -723,12 +723,13 @@
     </div>
   </div>
 
-  <!-- ============ HISTORY MODAL ============ -->
-  <div id="modal-history" class="modal-overlay hidden" style="z-index: 9999999;">
+  <!-- ============ HISTORY MODAL (CLICK OUTSIDE TO CLOSE FIX) ============ -->
+  <div id="modal-history" class="modal-overlay hidden" style="z-index: 9999999;" onclick="if(event.target===this) closeHistoryModal()">
     <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
       
+      <!-- Header & Filter Dropdown -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-        <h2 style="margin:0; display:flex; align-items:center;">
+        <h2 style="margin:0; display:flex; align-items:center; font-size:1.1rem;">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg> 
           Activity Logs
         </h2>
@@ -741,19 +742,19 @@
             <option value="month">This Month</option>
             <option value="all">All Time</option>
           </select>
-          <button class="modal-close-x" style="position:relative; top:0; right:0;" onclick="closeHistoryModal()">
+          <button class="modal-close-x" style="position:relative; top:0; right:0; padding: 4px;" onclick="closeHistoryModal()">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
           </button>
         </div>
       </div>
 
+      <!-- Logs Container (Scrollable) -->
       <div id="history-logs-container" style="overflow-y: auto; flex: 1; padding-right: 5px; display: flex; flex-direction: column; gap: 10px;">
         <p style="text-align:center; color:var(--text-muted);">Fetching live logs from Supabase...</p>
       </div>
 
     </div>
   </div>
-
   
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
