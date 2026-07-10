@@ -725,15 +725,34 @@
   <!-- ============ HISTORY MODAL ============ -->
   <div id="modal-history" class="modal-overlay hidden" style="z-index: 9999999;">
     <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h2 style="margin:0;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg> Global Activity Logs</h2>
-        <button class="modal-close-x" onclick="closeHistoryModal()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <h2 style="margin:0; display:flex; align-items:center;">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg> 
+          Activity Logs
+        </h2>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+          <select id="history-time-filter" onchange="fetchAndRenderHistory()" style="margin:0; padding: 6px 12px; background: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; font-size: 0.8rem; font-weight: 700; outline: none; cursor: pointer;">
+            <option value="today" selected>Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="all">All Time</option>
+          </select>
+          <button class="modal-close-x" style="position:relative; top:0; right:0;" onclick="closeHistoryModal()">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+          </button>
+        </div>
       </div>
+
       <div id="history-logs-container" style="overflow-y: auto; flex: 1; padding-right: 5px; display: flex; flex-direction: column; gap: 10px;">
         <p style="text-align:center; color:var(--text-muted);">Fetching live logs from Supabase...</p>
       </div>
+
     </div>
   </div>
+
   
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
