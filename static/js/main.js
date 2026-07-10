@@ -180,7 +180,7 @@ window.addEventListener('load', () => {
     function findUserKey(input) { return null; }
 
 // ==========================================
-// 🚀 PREMIUM TOAST & AUTO-ACTIVITY LOGGER
+// 🚀 PREMIUM TOAST (BULLETPROOF FIX)
 // ==========================================
 function showToast(type, title, msg, icon) {
   const stack = document.getElementById('toast-stack');
@@ -199,7 +199,7 @@ function showToast(type, title, msg, icon) {
         <div class="toast-title">${title}</div>
         <div class="toast-message">${msg || ''}</div>
     </div>
-    <button class="toast-close" onclick="dismissToast(this.parentElement)">
+    <button class="toast-close" onclick="this.parentElement.remove()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
     </button>
     <div class="toast-progress"></div>
@@ -207,14 +207,12 @@ function showToast(type, title, msg, icon) {
   
   stack.appendChild(el);
   
-  const timer = setTimeout(() => dismissToast(el), 3200);
-  el._timer = timer;
+  // Bulletproof Auto-Remove (3.2 सेकंड बाद 100% गायब होगा)
+  setTimeout(() => { if (el && el.parentNode) el.remove(); }, 3200);
 
-  // 🔥 AUTO-TRACKER: HAR CHOTA ACTION SUPABASE BHEJEGA 🔥
-  // सिर्फ Success और Info वाले मैसेज रिकॉर्ड होंगे (ताकि फालतू एरर सेव न हों)
+  // Auto-Tracker
   if (type === 'success' || type === 'info') {
      if (typeof logActivity === 'function') {
-         // HTML टैग्स को हटाकर साफ टेक्स्ट Supabase में भेजेंगे
          let cleanMsg = msg ? String(msg).replace(/<[^>]*>?/gm, '') : ''; 
          logActivity(`${title} - ${cleanMsg}`);
      }
@@ -2261,38 +2259,59 @@ function closeHistoryModal() {
 async function fetchAndRenderHistory() {
   const container = document.getElementById('history-logs-container');
   if (!container) return;
+
+  // Filter Value (Default: Today)
+  const filterVal = document.getElementById('history-time-filter') ? document.getElementById('history-time-filter').value : 'today';
   
   container.innerHTML = `<div style="text-align:center; padding:20px;">
     <div class="boot-ring" style="margin: 0 auto 16px; border-top-color: var(--primary); width:30px; height:30px;"></div>
-    <p style="color:var(--text-muted);">Fetching live logs...</p>
+    <p style="color:var(--text-muted);">Fetching logs...</p>
   </div>`;
   
   const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
   const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
 
   try {
-    const response = await fetch(`${dbUrl}/rest/v1/activity_logs?select=*&order=created_at.desc&limit=50`, {
+    const response = await fetch(`${dbUrl}/rest/v1/activity_logs?select=*&order=created_at.desc&limit=200`, {
       method: 'GET',
-      headers: {
-        'apikey': dbKey,
-        'Authorization': `Bearer ${dbKey}`,
-        'Content-Type': 'application/json'
-      }
+      headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}`, 'Content-Type': 'application/json' }
     });
 
     if (!response.ok) throw new Error('Fetch failed');
-    const data = await response.json();
+    let data = await response.json();
+
+    // ===================================
+    // TIME FILTER LOGIC
+    // ===================================
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+    const firstDayOfWeek = new Date(today); firstDayOfWeek.setDate(today.getDate() - today.getDay());
+
+    data = data.filter(log => {
+        if (filterVal === 'all') return true;
+        
+        const logDate = new Date(log.created_at);
+        const logDay = new Date(logDate.getFullYear(), logDate.getMonth(), logDate.getDate());
+
+        if (filterVal === 'today') return logDay.getTime() === today.getTime();
+        if (filterVal === 'yesterday') return logDay.getTime() === yesterday.getTime();
+        if (filterVal === 'week') return logDate >= firstDayOfWeek;
+        if (filterVal === 'month') return logDate.getMonth() === now.getMonth() && logDate.getFullYear() === now.getFullYear();
+        return true;
+    });
 
     if (!data || data.length === 0) {
-      container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No activity recorded yet. Start doing some actions!</p>`;
+      container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No activity found for selected time.</p>`;
       return;
     }
     
     let html = "";
     data.forEach(log => {
        const time = new Date(log.created_at).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+       // flex-shrink: 0 lagaya hai taaki ye squish na ho aur aaram se scroll ho
        html += `
-        <div style="background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
+        <div style="flex-shrink: 0; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
            <strong style="color:var(--primary); font-size:1.05rem; display:inline-flex; align-items:center; gap:4px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               @${log.user_name}
@@ -2306,9 +2325,6 @@ async function fetchAndRenderHistory() {
     });
     container.innerHTML = html;
   } catch (err) {
-    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--danger);">
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:10px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-      <br>Error fetching logs from database.
-    </div>`;
+    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--danger);">Error fetching logs.</div>`;
   }
 }
