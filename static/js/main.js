@@ -179,49 +179,47 @@ window.addEventListener('load', () => {
     }
     function findUserKey(input) { return null; }
 
-    /* ==========================================================
-       TOASTS
-    ========================================================== */
-    // ==========================================
-    // 🚀 PREMIUM TOAST (WITH YOUR ORIGINAL LOGIC)
-    // ==========================================
-    function showToast(type, title, msg, icon) {
-      const stack = document.getElementById('toast-stack');
-      if (!stack) return;
-      
-      const el = document.createElement('div');
-      el.className = `premium-toast ${type}`; // 👈 यहाँ नया क्लास लगा दिया
-      
-      const icons = { success: 'fa-solid fa-circle-check', error: 'fa-solid fa-circle-xmark', warning: 'fa-solid fa-triangle-exclamation', info: 'fa-solid fa-circle-info' };
-      
-      // आपके ic() वाले लॉजिक के साथ नया HTML
-      el.innerHTML = `
-        <div class="toast-icon-box">
-            ${ic(icon || icons[type] || icons.info)}
-        </div>
-        <div class="toast-content">
-            <div class="toast-title">${title}</div>
-            <div class="toast-message">${msg || ''}</div>
-        </div>
-        <button class="toast-close" onclick="dismissToast(this.parentElement)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-        </button>
-        <div class="toast-progress"></div>
-      `;
-      
-      stack.appendChild(el);
-      
-      // आपका ओरिजिनल टाइमर लॉजिक
-      const timer = setTimeout(() => dismissToast(el), 3200);
-      el._timer = timer;
-    }
+// ==========================================
+// 🚀 PREMIUM TOAST & AUTO-ACTIVITY LOGGER
+// ==========================================
+function showToast(type, title, msg, icon) {
+  const stack = document.getElementById('toast-stack');
+  if (!stack) return;
+  
+  const el = document.createElement('div');
+  el.className = `premium-toast ${type}`; 
+  
+  const icons = { success: 'fa-solid fa-circle-check', error: 'fa-solid fa-circle-xmark', warning: 'fa-solid fa-triangle-exclamation', info: 'fa-solid fa-circle-info' };
+  
+  el.innerHTML = `
+    <div class="toast-icon-box">
+        ${ic(icon || icons[type] || icons.info)}
+    </div>
+    <div class="toast-content">
+        <div class="toast-title">${title}</div>
+        <div class="toast-message">${msg || ''}</div>
+    </div>
+    <button class="toast-close" onclick="dismissToast(this.parentElement)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+    </button>
+    <div class="toast-progress"></div>
+  `;
+  
+  stack.appendChild(el);
+  
+  const timer = setTimeout(() => dismissToast(el), 3200);
+  el._timer = timer;
 
-    function dismissToast(el) {
-      if (!el || el.classList.contains('leaving')) return;
-      clearTimeout(el._timer);
-      el.classList.add('leaving');
-      setTimeout(() => el.remove(), 300); // 👈 एनीमेशन के हिसाब से टाइमिंग सेट कर दी
-    }
+  // 🔥 AUTO-TRACKER: HAR CHOTA ACTION SUPABASE BHEJEGA 🔥
+  // सिर्फ Success और Info वाले मैसेज रिकॉर्ड होंगे (ताकि फालतू एरर सेव न हों)
+  if (type === 'success' || type === 'info') {
+     if (typeof logActivity === 'function') {
+         // HTML टैग्स को हटाकर साफ टेक्स्ट Supabase में भेजेंगे
+         let cleanMsg = msg ? String(msg).replace(/<[^>]*>?/gm, '') : ''; 
+         logActivity(`${title} - ${cleanMsg}`);
+     }
+  }
+}
 
 
     /* ==========================================================
