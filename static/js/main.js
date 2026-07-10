@@ -2095,70 +2095,76 @@ async function handleCSVImport(event) {
         }
     }
 
+}
+
 /* ==================================================
-   3-DOTS MENU, ACTIVITY LOGGER & LOGIC (FIXED)
+   3-DOTS MENU, ACTIVITY LOGGER & LOGIC (CRASH-PROOF FIXED)
    ================================================== */
 
-// 1. Sidebar Toggle & Click Outside Fix
 function toggleSidebar() {
   const overlay = document.getElementById('sidebarOverlay');
   const sidebar = document.getElementById('appSidebar');
   
-  overlay.classList.toggle('active');
-  sidebar.classList.toggle('active');
+  if (overlay) overlay.classList.toggle('active');
+  if (sidebar) sidebar.classList.toggle('active');
   
-  if (sidebar.classList.contains('active')) {
+  if (sidebar && sidebar.classList.contains('active')) {
     updateSidebarProfile();
   }
 }
 
-// 2. Profile, Avatar, Password from Supabase
-let isSidebarPasswordVisible = false;
+// ग्लोबल वेरिएबल ताकि डुप्लीकेट डिक्लेरेशन से क्रैश न हो
+window.isSidebarPasswordVisible = false;
 
 function updateSidebarProfile() {
-  // Supabase से currentUser (जिसमे username, userid, password है)
+  // Supabase से डाटा उठाना
   const name = (typeof currentUser !== 'undefined' && currentUser.username) ? currentUser.username : "User";
   const id = (typeof currentUser !== 'undefined' && currentUser.userid) ? currentUser.userid : "----";
   
-  document.getElementById('sidebarUserName').innerText = name;
-  document.getElementById('sidebarUserId').innerText = "ID: " + id;
+  const nameEl = document.getElementById('sidebarUserName');
+  const idEl = document.getElementById('sidebarUserId');
+  const avatarEl = document.getElementById('sidebarAvatar');
+  const passEl = document.getElementById('sidebarUserPass');
   
-  // Avatar का पहला लेटर
-  document.getElementById('sidebarAvatar').innerText = name.charAt(0).toUpperCase();
+  if (nameEl) nameEl.innerText = name;
+  if (idEl) idEl.innerText = "ID: " + id;
+  if (avatarEl) avatarEl.innerText = name.charAt(0).toUpperCase();
 
   // पासवर्ड हाईड करो
-  isSidebarPasswordVisible = false;
-  document.getElementById('sidebarUserPass').innerText = "••••••••";
-  document.getElementById('sidebarUserPass').style.letterSpacing = "3px";
+  window.isSidebarPasswordVisible = false;
+  if (passEl) {
+    passEl.innerText = "••••••••";
+    passEl.style.letterSpacing = "3px";
+  }
   
   // Theme Toggle सिंक करो
   const isDark = document.body.getAttribute('data-theme') === 'dark';
-  document.getElementById('sidebarThemeToggle').checked = isDark;
+  const themeToggle = document.getElementById('sidebarThemeToggle');
+  if (themeToggle) themeToggle.checked = isDark;
   updateThemeText(isDark);
 }
 
 function toggleSidebarPassword() {
   const passElement = document.getElementById('sidebarUserPass');
   const eyeIcon = document.getElementById('sidebarEyeIcon');
-  // Supabase से आया असली पासवर्ड 
   const realPass = (typeof currentUser !== 'undefined' && currentUser.password) ? currentUser.password : "No Data";
 
-  if (!isSidebarPasswordVisible) {
+  if (!window.isSidebarPasswordVisible) {
     passElement.innerText = realPass; 
     passElement.style.letterSpacing = "1px"; 
     eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
-    isSidebarPasswordVisible = true;
+    window.isSidebarPasswordVisible = true;
   } else {
     passElement.innerText = "••••••••"; 
     passElement.style.letterSpacing = "3px";
     eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
-    isSidebarPasswordVisible = false;
+    window.isSidebarPasswordVisible = false;
   }
 }
 
-// 3. Dark/Light Mode Fix
 function updateThemeText(isDark) {
   const textSpan = document.getElementById('sidebar-theme-text');
+  if (!textSpan) return;
   if (isDark) {
     textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Light Mode`;
   } else {
@@ -2176,31 +2182,31 @@ function toggleThemeFromSidebar(checkbox) {
   if (mainSwitch) mainSwitch.checked = isDark;
 }
 
-// 4. Install App Fix
-let deferredPrompt = null;
+// PWA Install Logic - Crash Proof
+window.deferredAppPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
-  deferredPrompt = e;
+  window.deferredAppPrompt = e;
 });
 
 function triggerAppInstall() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => { deferredPrompt = null; });
+  if (window.deferredAppPrompt) {
+    window.deferredAppPrompt.prompt();
+    window.deferredAppPrompt.userChoice.then(() => { window.deferredAppPrompt = null; });
   } else {
-    alert("ऐप पहले से इंस्टॉल है या ब्राउज़र सपोर्ट नहीं कर रहा।");
+    alert("App is already installed or browser does not support it.");
   }
 }
 
-// 5. Logout Fix
 function sidebarLogout() {
-  toggleSidebar(); // पहले मेनू बंद करो
+  toggleSidebar();
   setTimeout(() => { if (typeof confirmLogout === 'function') confirmLogout(); }, 300);
 }
 
-// 6. Action Tracker (इसे जब भी कोई कुछ करे तो चला देना: logActivity("Added new lead"))
+// Action Tracker for Supabase Activity Logs
 async function logActivity(actionDetail) {
   if (typeof currentUser === 'undefined' || !currentUser) return;
+  if (typeof supabase === 'undefined') return; // क्रैश से बचने के लिए
   try {
     await supabase.from('activity_logs').insert([{
       user_id: currentUser.userid,
@@ -2210,7 +2216,6 @@ async function logActivity(actionDetail) {
   } catch (err) { console.error("Logging error", err); }
 }
 
-// 7. History Popup Fetching from Supabase
 function openHistoryModal() {
   toggleSidebar();
   const modal = document.getElementById('modal-history');
@@ -2227,7 +2232,13 @@ function closeHistoryModal() {
 
 async function fetchAndRenderHistory() {
   const container = document.getElementById('history-logs-container');
+  if (!container) return;
   container.innerHTML = `<p style="text-align:center; color:var(--text-muted);">Fetching live logs...</p>`;
+  
+  if (typeof supabase === 'undefined') {
+    container.innerHTML = `<p style="text-align:center; color:var(--danger);">Supabase is not connected yet.</p>`;
+    return;
+  }
   
   try {
     const { data, error } = await supabase
