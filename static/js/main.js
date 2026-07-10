@@ -2137,8 +2137,8 @@ function updateSidebarProfile() {
     passEl.style.letterSpacing = "3px";
   }
   
-  // Theme Toggle सिंक करो
-  const isDark = document.body.getAttribute('data-theme') === 'dark';
+    // Theme Toggle सिंक करो
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const themeToggle = document.getElementById('sidebarThemeToggle');
   if (themeToggle) themeToggle.checked = isDark;
   updateThemeText(isDark);
@@ -2162,37 +2162,37 @@ function toggleSidebarPassword() {
   }
 }
 
-// 1. Theme Text aur Toggle ko sync karne ka logic
+// ==========================================
+// 3. Dark/Light Mode Fix (100% Working)
+// ==========================================
+
 function updateThemeText(isDark) {
   const textSpan = document.getElementById('sidebar-theme-text');
   if (!textSpan) return;
-  
   if (isDark) {
-    // Agar Dark Mode on hai, toh text "Dark Mode" dikhaye
-    textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Dark Mode`;
+    textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Light Mode`;
   } else {
-    // Agar Light Mode on hai, toh text "Light Mode" dikhaye
-    textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Light Mode`;
+    textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Dark Mode`;
   }
 }
 
-// 2. Sidebar se Theme badalne ka logic
 function toggleThemeFromSidebar(checkbox) {
   const isDark = checkbox.checked;
-  
-  // Theme apply karo
-  document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
-  localStorage.setItem('meta_crm_theme', isDark ? 'dark' : 'light');
-  
-  // UI update karo
   updateThemeText(isDark);
   
-  // Main Dashboard ke switch ko bhi update karo (agar wahan bhi switch hai)
+  // यहीं गड़बड़ थी! body की जगह documentElement (html) का इस्तेमाल करना था
+  if (isDark) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('crmTheme', 'dark'); // पुरानी वाली Storage Key
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('crmTheme', 'light');
+  }
+  
   const mainSwitch = document.getElementById('theme-switch');
   if (mainSwitch) mainSwitch.checked = isDark;
-
-  console.log("Theme switched to: " + (isDark ? "dark" : "light"));
 }
+
 
 
 // PWA Install Logic - Crash Proof
