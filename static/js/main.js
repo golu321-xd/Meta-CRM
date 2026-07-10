@@ -2271,17 +2271,26 @@ function openHistoryModal() {
   }
 }
 
-function closeHistoryModal() {
-  const modal = document.getElementById('modal-history');
-  if (modal) modal.classList.add('hidden');
-}
+window.currentRenderedLogs = [];
 
 async function fetchAndRenderHistory() {
   const container = document.getElementById('history-logs-container');
   if (!container) return;
 
-  // Filter Value (Default: Today)
   const filterVal = document.getElementById('history-time-filter') ? document.getElementById('history-time-filter').value : 'today';
+  
+  // 🔥 ADMIN MAGIC: Bulk Delete Button Inject karna 🔥
+  const filterDiv = document.getElementById('history-time-filter').parentElement;
+  if (currentUser === 'admin') {
+      if (!document.getElementById('admin-bulk-delete-btn')) {
+          const bulkBtn = document.createElement('button');
+          bulkBtn.id = 'admin-bulk-delete-btn';
+          bulkBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete Shown`;
+          bulkBtn.style.cssText = 'background:var(--danger-soft); color:var(--danger); border:1px solid rgba(239,68,68,0.2); padding:6px 10px; border-radius:8px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;';
+          bulkBtn.onclick = adminBulkDeleteLogs;
+          filterDiv.insertBefore(bulkBtn, document.getElementById('history-time-filter'));
+      }
+  }
   
   container.innerHTML = `<div style="text-align:center; padding:20px;">
     <div class="boot-ring" style="margin: 0 auto 16px; border-top-color: var(--primary); width:30px; height:30px;"></div>
@@ -2292,7 +2301,8 @@ async function fetchAndRenderHistory() {
   const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
 
   try {
-    const response = await fetch(`${dbUrl}/rest/v1/activity_logs?select=*&order=created_at.desc&limit=200`, {
+    // 500 logs fetch karenge taaki filter sahi kaam kare
+    const response = await fetch(`${dbUrl}/rest/v1/activity_logs?select=*&order=created_at.desc&limit=500`, {
       method: 'GET',
       headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}`, 'Content-Type': 'application/json' }
     });
@@ -2300,9 +2310,6 @@ async function fetchAndRenderHistory() {
     if (!response.ok) throw new Error('Fetch failed');
     let data = await response.json();
 
-    // ===================================
-    // TIME FILTER LOGIC
-    // ===================================
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
@@ -2310,16 +2317,16 @@ async function fetchAndRenderHistory() {
 
     data = data.filter(log => {
         if (filterVal === 'all') return true;
-        
         const logDate = new Date(log.created_at);
         const logDay = new Date(logDate.getFullYear(), logDate.getMonth(), logDate.getDate());
-
         if (filterVal === 'today') return logDay.getTime() === today.getTime();
         if (filterVal === 'yesterday') return logDay.getTime() === yesterday.getTime();
         if (filterVal === 'week') return logDate >= firstDayOfWeek;
         if (filterVal === 'month') return logDate.getMonth() === now.getMonth() && logDate.getFullYear() === now.getFullYear();
         return true;
     });
+    
+    window.currentRenderedLogs = data; // Delete command ke liye data save kar liya
 
     if (!data || data.length === 0) {
       container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No activity found for selected time.</p>`;
@@ -2329,14 +2336,23 @@ async function fetchAndRenderHistory() {
     let html = "";
     data.forEach(log => {
        const time = new Date(log.created_at).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
-       // flex-shrink: 0 lagaya hai taaki ye squish na ho aur aaram se scroll ho
+       
+       // 🔥 ADMIN MAGIC: Single Delete Button 🔥
+       let deleteHtml = '';
+       if (currentUser === 'admin') {
+           deleteHtml = `<button onclick="adminDeleteSingleLog('${log.id}')" style="background:transparent; border:none; color:var(--danger); cursor:pointer; padding:4px; margin-left:auto; opacity:0.7;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>`;
+       }
+
        html += `
         <div style="flex-shrink: 0; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;">
-           <strong style="color:var(--primary); font-size:1.05rem; display:inline-flex; align-items:center; gap:4px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              @${log.user_name}
-           </strong> 
-           <span style="color:var(--text-main); margin-left:4px;">${log.action}</span><br>
+           <div style="display:flex; justify-content:space-between; align-items:center;">
+               <strong style="color:var(--primary); font-size:1.05rem; display:inline-flex; align-items:center; gap:4px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  @${log.user_name}
+               </strong> 
+               ${deleteHtml}
+           </div>
+           <span style="color:var(--text-main); display:block; margin-top:4px;">${log.action}</span>
            
            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:5px;">
              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${time}
@@ -2347,4 +2363,46 @@ async function fetchAndRenderHistory() {
   } catch (err) {
     container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--danger);">Error fetching logs.</div>`;
   }
+}
+
+// 🗑️ Delete Single Log Function
+async function adminDeleteSingleLog(logId) {
+    if (!confirm("Delete this log permanently from database?")) return;
+    const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
+    const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
+    
+    try {
+        await fetch(`${dbUrl}/rest/v1/activity_logs?id=eq.${logId}`, {
+            method: 'DELETE',
+            headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
+        });
+        showToast('success', 'Deleted', 'Log removed permanently.');
+        fetchAndRenderHistory();
+    } catch(e) {
+        showToast('error', 'Error', 'Failed to delete log.');
+    }
+}
+
+// 🗑️ Bulk Delete Logs Function
+async function adminBulkDeleteLogs() {
+    if (!window.currentRenderedLogs || window.currentRenderedLogs.length === 0) return;
+    const filterSelect = document.getElementById('history-time-filter');
+    const filterText = filterSelect.options[filterSelect.selectedIndex].text;
+    
+    if (!confirm(`⚠️ WARNING! Permanently delete ALL ${window.currentRenderedLogs.length} logs for "${filterText}"? This action cannot be undone.`)) return;
+
+    const ids = window.currentRenderedLogs.map(l => l.id).join(',');
+    const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
+    const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
+
+    try {
+        await fetch(`${dbUrl}/rest/v1/activity_logs?id=in.(${ids})`, {
+            method: 'DELETE',
+            headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
+        });
+        showToast('success', 'Bulk Deleted', `${window.currentRenderedLogs.length} logs removed from Supabase.`);
+        fetchAndRenderHistory();
+    } catch(e) {
+        showToast('error', 'Error', 'Failed to bulk delete logs.');
+    }
 }
