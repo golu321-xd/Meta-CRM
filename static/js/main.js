@@ -2096,9 +2096,10 @@ async function handleCSVImport(event) {
     }
 
 /* ==================================================
-   3-DOTS MENU & SIDEBAR LOGIC (UPDATED)
+   3-DOTS MENU, ACTIVITY LOGGER & LOGIC (FIXED)
    ================================================== */
 
+// 1. Sidebar Toggle & Click Outside Fix
 function toggleSidebar() {
   const overlay = document.getElementById('sidebarOverlay');
   const sidebar = document.getElementById('appSidebar');
@@ -2111,86 +2112,111 @@ function toggleSidebar() {
   }
 }
 
+// 2. Profile, Avatar, Password from Supabase
 let isSidebarPasswordVisible = false;
-let currentSidebarPassword = "Hidden"; // इसे बाद में Supabase से लिंक करेंगे
 
 function updateSidebarProfile() {
-  // 1. आपका असली नाम और ID डायरेक्ट वेबसाइट से उठाएगा (Mayank, 18830894)
-  const nameEl = document.getElementById('welcome-name');
-  const idEl = document.getElementById('mobile-userid-display');
+  // Supabase से currentUser (जिसमे username, userid, password है)
+  const name = (typeof currentUser !== 'undefined' && currentUser.username) ? currentUser.username : "User";
+  const id = (typeof currentUser !== 'undefined' && currentUser.userid) ? currentUser.userid : "----";
   
-  document.getElementById('sidebarUserName').innerText = nameEl ? nameEl.innerText : "User";
-  document.getElementById('sidebarUserId').innerText = idEl ? idEl.innerText : "----";
+  document.getElementById('sidebarUserName').innerText = name;
+  document.getElementById('sidebarUserId').innerText = "ID: " + id;
   
-  // 2. पासवर्ड छुपाओ
+  // Avatar का पहला लेटर
+  document.getElementById('sidebarAvatar').innerText = name.charAt(0).toUpperCase();
+
+  // पासवर्ड हाईड करो
   isSidebarPasswordVisible = false;
   document.getElementById('sidebarUserPass').innerText = "••••••••";
   document.getElementById('sidebarUserPass').style.letterSpacing = "3px";
-  document.getElementById('sidebarUserPass').style.transform = "translateY(2px)";
   
-  // 3. डार्क मोड बटन का टेक्स्ट और स्विच चेक करो
-  const isDark = document.body.getAttribute('data-theme') !== 'light';
+  // Theme Toggle सिंक करो
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
   document.getElementById('sidebarThemeToggle').checked = isDark;
-  
-  const textSpan = document.getElementById('sidebar-theme-text');
-  if (isDark) {
-    textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Light Mode`;
-  } else {
-    textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Dark Mode`;
-  }
+  updateThemeText(isDark);
 }
 
 function toggleSidebarPassword() {
   const passElement = document.getElementById('sidebarUserPass');
   const eyeIcon = document.getElementById('sidebarEyeIcon');
+  // Supabase से आया असली पासवर्ड 
+  const realPass = (typeof currentUser !== 'undefined' && currentUser.password) ? currentUser.password : "No Data";
+
   if (!isSidebarPasswordVisible) {
-    passElement.innerText = currentSidebarPassword; 
+    passElement.innerText = realPass; 
     passElement.style.letterSpacing = "1px"; 
-    passElement.style.transform = "translateY(0)";
     eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
     isSidebarPasswordVisible = true;
   } else {
     passElement.innerText = "••••••••"; 
     passElement.style.letterSpacing = "3px";
-    passElement.style.transform = "translateY(2px)";
     eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
     isSidebarPasswordVisible = false;
   }
 }
 
-function toggleThemeFromSidebar(checkbox) {
-  const isDark = checkbox.checked;
+// 3. Dark/Light Mode Fix
+function updateThemeText(isDark) {
   const textSpan = document.getElementById('sidebar-theme-text');
-  
   if (isDark) {
     textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Light Mode`;
-    document.body.setAttribute('data-theme', 'dark');
-    localStorage.setItem('meta_crm_theme', 'dark');
   } else {
     textSpan.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg> Dark Mode`;
-    document.body.setAttribute('data-theme', 'light');
-    localStorage.setItem('meta_crm_theme', 'light');
   }
+}
+
+function toggleThemeFromSidebar(checkbox) {
+  const isDark = checkbox.checked;
+  updateThemeText(isDark);
+  document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  localStorage.setItem('meta_crm_theme', isDark ? 'dark' : 'light');
   
   const mainSwitch = document.getElementById('theme-switch');
   if (mainSwitch) mainSwitch.checked = isDark;
 }
 
-// 4. Logout फिक्स (लॉगआउट दबाते ही पॉपअप बंद होगा)
-function sidebarLogout() {
-  toggleSidebar(); // पहले पॉपअप को अंदर भेजो
-  if (typeof confirmLogout === 'function') {
-    confirmLogout(); // फिर असली लॉगआउट फंक्शन चलाओ
+// 4. Install App Fix
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+});
+
+function triggerAppInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => { deferredPrompt = null; });
+  } else {
+    alert("ऐप पहले से इंस्टॉल है या ब्राउज़र सपोर्ट नहीं कर रहा।");
   }
 }
 
-// 5. नया History Modal खोलना
+// 5. Logout Fix
+function sidebarLogout() {
+  toggleSidebar(); // पहले मेनू बंद करो
+  setTimeout(() => { if (typeof confirmLogout === 'function') confirmLogout(); }, 300);
+}
+
+// 6. Action Tracker (इसे जब भी कोई कुछ करे तो चला देना: logActivity("Added new lead"))
+async function logActivity(actionDetail) {
+  if (typeof currentUser === 'undefined' || !currentUser) return;
+  try {
+    await supabase.from('activity_logs').insert([{
+      user_id: currentUser.userid,
+      user_name: currentUser.username,
+      action: actionDetail
+    }]);
+  } catch (err) { console.error("Logging error", err); }
+}
+
+// 7. History Popup Fetching from Supabase
 function openHistoryModal() {
-  toggleSidebar(); // 3-dots वाले मेन्यू को बंद करो
+  toggleSidebar();
   const modal = document.getElementById('modal-history');
   if (modal) {
     modal.classList.remove('hidden');
-    fetchAndRenderHistory(); // डेटा लोड करो
+    fetchAndRenderHistory();
   }
 }
 
@@ -2199,17 +2225,36 @@ function closeHistoryModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-// History का डमी डेटा (बाद में इसे Supabase से जोड़ देंगे)
-function fetchAndRenderHistory() {
+async function fetchAndRenderHistory() {
   const container = document.getElementById('history-logs-container');
-  container.innerHTML = `
-    <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-       <strong style="color:var(--primary)">@Mayank</strong> added a new lead (Rahul Kumar). <br>
-       <span style="font-size:0.75rem; color:var(--text-muted)">Just now</span>
-    </div>
-    <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-       <strong style="color:var(--primary)">@Mayank</strong> updated status for lead ID #1024. <br>
-       <span style="font-size:0.75rem; color:var(--text-muted)">10 mins ago</span>
-    </div>
-  `;
+  container.innerHTML = `<p style="text-align:center; color:var(--text-muted);">Fetching live logs...</p>`;
+  
+  try {
+    const { data, error } = await supabase
+      .from('activity_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+      
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      container.innerHTML = `<p style="text-align:center; color:var(--text-muted);">No activity recorded yet.</p>`;
+      return;
+    }
+    
+    let html = "";
+    data.forEach(log => {
+       const time = new Date(log.created_at).toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+       html += `
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border: 1px solid var(--border);">
+           <strong style="color:var(--primary); font-size:1.05rem;">@${log.user_name}</strong> <span style="color:var(--text-main);">${log.action}</span><br>
+           <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; display:flex; align-items:center; gap:5px;">
+             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> ${time}
+           </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<p style="text-align:center; color:var(--danger);">Error fetching logs.</p>`;
+  }
 }
