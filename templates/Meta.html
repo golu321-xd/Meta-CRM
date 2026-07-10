@@ -814,27 +814,30 @@
     </div>
   </div>
 
-      <!-- ============ RECOVERY PROMPT MODAL (DANGER THEME) ============ -->
+  <!-- ============ RECOVERY PROMPT MODAL (WITH LIVE TIMER) ============ -->
   <div id="modal-recovery-prompt" class="modal-overlay hidden" style="z-index: 9999999;">
-    <div class="modal-content" style="max-height: 85vh; text-align:center; border: 1px solid rgba(239, 68, 68, 0.5); box-shadow: 0 10px 50px rgba(239, 68, 68, 0.2);">
+    <div class="modal-content" style="max-height: 90vh; text-align:center; border: 1px solid rgba(239, 68, 68, 0.5); box-shadow: 0 10px 50px rgba(239, 68, 68, 0.2);">
       
       <!-- Danger Warning Icon -->
-      <div style="width:60px; height:60px; background:rgba(239, 68, 68, 0.1); color:#ef4444; border-radius:50%; display:flex; justify-content:center; align-items:center; margin:0 auto 15px;">
+      <div style="width:60px; height:60px; background:rgba(239, 68, 68, 0.1); color:#ef4444; border-radius:50%; display:flex; justify-content:center; align-items:center; margin:0 auto 10px;">
          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </div>
       
-      <!-- English Text & Danger Title -->
       <h2 style="color:#ef4444; margin:0; font-size:1.3rem;">Account Deletion Pending!</h2>
-      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:12px; line-height:1.5;">
-         This account is currently queued for permanent deletion.<br><br>
-         <strong style="color:var(--text-main); font-size: 1rem;">Do you want to RECOVER it right now?</strong>
+      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px; line-height:1.5;">
+         This account is queued for permanent deletion.
       </p>
+
+      <!-- 🔥 LIVE COUNTDOWN BOX 🔥 -->
+      <div style="margin: 20px 0; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); padding: 15px; border-radius: 12px;">
+         <span style="display:block; font-size: 0.7rem; color: #ef4444; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px;">Time Remaining</span>
+         <span id="recovery-countdown" style="font-size: 2rem; font-weight: 900; color: var(--text-main); font-family: monospace; letter-spacing: 4px; text-shadow: 0 0 10px rgba(239,68,68,0.3);">--:--:--</span>
+      </div>
       
-      <div style="display:flex; gap:10px; margin-top:25px;">
-         <!-- RED CANCEL BUTTON -->
+      <p style="color:var(--text-main); font-size:0.95rem; font-weight:700; margin-bottom:0;">Do you want to RECOVER it right now?</p>
+      
+      <div style="display:flex; gap:10px; margin-top:20px;">
          <button onclick="if(window.resolveRecovery) window.resolveRecovery(false)" style="flex:1; padding:12px; border-radius:8px; background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.4); color:#ef4444; font-weight:bold; cursor:pointer; transition:0.2s;">Cancel</button>
-         
-         <!-- GREEN RECOVER BUTTON -->
          <button onclick="if(window.resolveRecovery) window.resolveRecovery(true)" style="flex:1; padding:12px; border-radius:8px; background:#10b981; border:none; color:#fff; font-weight:bold; cursor:pointer; box-shadow:0 4px 15px rgba(16, 185, 129, 0.4); transition:0.2s;">Yes, Recover</button>
       </div>
       
