@@ -2114,7 +2114,7 @@ window.isSidebarPasswordVisible = false;
 window.realUserPassword = "No Data"; // Supabase से आने वाला असली पासवर्ड
 
 async function updateSidebarProfile() {
-  // 1. नाम और ID सही से उठाना (अब 'User' नहीं, आपका असली नाम आएगा)
+  // 🔥 FIX: अब ये आपका असली नाम (admin/Vikas0001) एकदम सही पकड़ेगा
   const name = currentUser || "User";
   const id = currentUserId || "----";
   
@@ -2127,35 +2127,42 @@ async function updateSidebarProfile() {
   if (idEl) idEl.innerText = "ID: " + id;
   if (avatarEl) avatarEl.innerText = name.charAt(0).toUpperCase();
 
-  // 2. पासवर्ड UI को रीसेट करो
   window.isSidebarPasswordVisible = false;
   if (passEl) {
     passEl.innerText = "••••••••";
     passEl.style.letterSpacing = "3px";
   }
   
-  // 3. Theme Toggle सिंक करो
   const isDark = document.body.getAttribute('data-theme') === 'dark';
   const themeToggle = document.getElementById('sidebarThemeToggle');
   if (themeToggle) themeToggle.checked = isDark;
   updateThemeText(isDark);
 
-  // 4. Supabase के 'users' टेबल से असली पासवर्ड Fetch करना 🚀
   const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
   const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
 
   try {
-    const res = await fetch(`${dbUrl}/rest/v1/users?username=eq.${name}&select=password`, {
+    const res = await fetch(`${dbUrl}/rest/v1/users?username=eq.${name}&select=password,signup_time`, {
       headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
     });
     if (res.ok) {
       const data = await res.json();
       if (data && data.length > 0) {
-        window.realUserPassword = data[0].password; // असली पासवर्ड सेव कर लिया
+        window.realUserPassword = data[0].password; 
+        
+        // 🔥 Joined Date अब 100% आएगी!
+        if (data[0].signup_time) {
+            const joinDate = new Date(data[0].signup_time).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            const joinedEl = document.getElementById('sidebarJoinedDate');
+            if(joinedEl) joinedEl.innerText = `Joined: ${joinDate}`;
+        }
+      } else {
+         const joinedEl = document.getElementById('sidebarJoinedDate');
+         if(joinedEl) joinedEl.innerText = `Joined: N/A`;
       }
     }
   } catch (e) {
-    console.error("Failed to fetch password from Supabase");
+    console.error("Failed to fetch details from Supabase");
   }
 }
 
