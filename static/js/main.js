@@ -2111,11 +2111,12 @@ function toggleSidebar() {
 
 // ग्लोबल वेरिएबल ताकि डुप्लीकेट डिक्लेरेशन से क्रैश न हो
 window.isSidebarPasswordVisible = false;
+window.realUserPassword = "No Data"; // Supabase से आने वाला असली पासवर्ड
 
-function updateSidebarProfile() {
-  // Supabase से डाटा उठाना
-  const name = (typeof currentUser !== 'undefined' && currentUser.username) ? currentUser.username : "User";
-  const id = (typeof currentUser !== 'undefined' && currentUser.userid) ? currentUser.userid : "----";
+async function updateSidebarProfile() {
+  // 1. नाम और ID सही से उठाना (अब 'User' नहीं, आपका असली नाम आएगा)
+  const name = currentUser || "User";
+  const id = currentUserId || "----";
   
   const nameEl = document.getElementById('sidebarUserName');
   const idEl = document.getElementById('sidebarUserId');
@@ -2126,31 +2127,50 @@ function updateSidebarProfile() {
   if (idEl) idEl.innerText = "ID: " + id;
   if (avatarEl) avatarEl.innerText = name.charAt(0).toUpperCase();
 
-  // पासवर्ड हाईड करो
+  // 2. पासवर्ड UI को रीसेट करो
   window.isSidebarPasswordVisible = false;
   if (passEl) {
     passEl.innerText = "••••••••";
     passEl.style.letterSpacing = "3px";
   }
   
-    // Theme Toggle सिंक करो
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  // 3. Theme Toggle सिंक करो
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
   const themeToggle = document.getElementById('sidebarThemeToggle');
   if (themeToggle) themeToggle.checked = isDark;
   updateThemeText(isDark);
+
+  // 4. Supabase के 'users' टेबल से असली पासवर्ड Fetch करना 🚀
+  const dbUrl = 'https://tujafnsplixbaxynxmdt.supabase.co';
+  const dbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR1amFmbnNwbGl4YmF4eW54bWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMDAzMzAsImV4cCI6MjA5ODg3NjMzMH0.HsTdbO-9qPb0yXHEJJK2bS2xIoZYYH3IO2g3Qo24U4k';
+
+  try {
+    const res = await fetch(`${dbUrl}/rest/v1/users?username=eq.${name}&select=password`, {
+      headers: { 'apikey': dbKey, 'Authorization': `Bearer ${dbKey}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.length > 0) {
+        window.realUserPassword = data[0].password; // असली पासवर्ड सेव कर लिया
+      }
+    }
+  } catch (e) {
+    console.error("Failed to fetch password from Supabase");
+  }
 }
 
 function toggleSidebarPassword() {
   const passElement = document.getElementById('sidebarUserPass');
   const eyeIcon = document.getElementById('sidebarEyeIcon');
-  const realPass = (typeof currentUser !== 'undefined' && currentUser.password) ? currentUser.password : "No Data";
 
   if (!window.isSidebarPasswordVisible) {
-    passElement.innerText = realPass; 
+    // असली पासवर्ड दिखाओ (Supabase वाला)
+    passElement.innerText = window.realUserPassword; 
     passElement.style.letterSpacing = "1px"; 
     eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
     window.isSidebarPasswordVisible = true;
   } else {
+    // पासवर्ड छुपाओ
     passElement.innerText = "••••••••"; 
     passElement.style.letterSpacing = "3px";
     eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
