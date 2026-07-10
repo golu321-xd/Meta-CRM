@@ -643,9 +643,9 @@
 
   <div id="appSidebar" class="sidebar-drawer">
     
-    <!-- TEAM DANISH HEADER -->
+    <!-- TEAM DANISH HEADER (With Glow) -->
     <div class="sidebar-header" style="justify-content: center; position: relative; padding: 25px 20px;">
-      <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: 1.5px; font-family: var(--font-display); text-transform: uppercase;">
+      <h2 style="margin: 0; font-size: 1.6rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px #6366f1, 0 0 20px #6366f1, 0 0 30px #a855f7; letter-spacing: 2px; font-family: var(--font-display); text-transform: uppercase;">
         Team Danish
       </h2>
       <button class="btn-icon" onclick="toggleSidebar()" style="position: absolute; right: 15px; top: 22px; background:none; border:none; color:var(--text-main); padding: 5px;">
@@ -654,11 +654,11 @@
     </div>
 
     <div class="sidebar-content">
+      
       <!-- 1. Dark/Light Mode Toggle -->
       <div class="sidebar-item">
         <span style="display:flex; align-items:center; gap:10px;" id="sidebar-theme-text">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          Light Mode
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Light Mode
         </span>
         <label class="theme-switch-drawer">
           <input type="checkbox" id="sidebarThemeToggle" onchange="toggleThemeFromSidebar(this)">
@@ -669,31 +669,27 @@
       <!-- 2. Install App -->
       <div class="sidebar-item clickable" id="sidebarInstallBtn" onclick="triggerAppInstall()">
         <span style="display:flex; align-items:center; gap:10px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          Install App
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Install App
         </span>
       </div>
 
-      <!-- 3. History (Naya Popup Khulega) -->
+      <!-- 3. History Logs -->
       <div class="sidebar-item clickable" onclick="openHistoryModal()">
         <span style="display:flex; align-items:center; gap:10px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg>
-          History Logs
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg> History Logs
         </span>
       </div>
 
-      <!-- 4. User Profile Section -->
+      <!-- 4. User Profile Section (With Avatar & Password) -->
       <div class="sidebar-profile-card">
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; font-weight: 700; letter-spacing: 0.5px;">ACCOUNT DETAILS</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; font-weight: 700; letter-spacing: 0.5px;">ACCOUNT DETAILS</div>
         
-        <div class="profile-row">
-          <span class="profile-label">Name:</span>
-          <span class="profile-value" id="sidebarUserName">Loading...</span>
-        </div>
-        
-        <div class="profile-row">
-          <span class="profile-label">User ID:</span>
-          <span class="profile-value" id="sidebarUserId">Loading...</span>
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+          <div id="sidebarAvatar" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: 800; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4);">U</div>
+          <div>
+            <div class="profile-value" id="sidebarUserName" style="font-size: 1.1rem;">User</div>
+            <div class="profile-label" id="sidebarUserId" style="font-size: 0.8rem;">ID: ----</div>
+          </div>
         </div>
         
         <div class="profile-row" style="display: flex; align-items: center; justify-content: space-between;">
@@ -708,42 +704,30 @@
       </div>
     </div>
 
-    <!-- Sidebar Footer -->
-    <div class="sidebar-footer" style="padding-top: 15px;">
-      <button class="btn btn-danger clickable" style="width: 100%; margin-bottom: 15px; border-radius: 10px;" onclick="sidebarLogout()">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Logout
+    <!-- Sidebar Footer (Fixed Cut-off Issue) -->
+    <div class="sidebar-footer" style="padding: 20px 20px 40px 20px;">
+      <button class="btn btn-danger clickable" style="width: 100%; margin-bottom: 10px; border-radius: 10px; font-weight: 700;" onclick="sidebarLogout()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout
       </button>
-      <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">
-        App Version 1.1
+      <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; letter-spacing: 1px;">
+        APP VERSION 1.1
       </div>
     </div>
   </div>
 
-  <!-- ============ NEW HISTORY MODAL ============ -->
+  <!-- ============ HISTORY MODAL ============ -->
   <div id="modal-history" class="modal-overlay hidden" style="z-index: 9999999;">
-    <div class="modal-content" style="max-height: 80vh; display: flex; flex-direction: column;">
+    <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h2 style="margin:0;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg> Activity Log</h2>
+        <h2 style="margin:0;"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg> Global Activity Logs</h2>
         <button class="modal-close-x" onclick="closeHistoryModal()"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
       </div>
       <div id="history-logs-container" style="overflow-y: auto; flex: 1; padding-right: 5px; display: flex; flex-direction: column; gap: 10px;">
-        <p style="text-align:center; color:var(--text-muted);">Fetching logs from Supabase...</p>
+        <p style="text-align:center; color:var(--text-muted);">Fetching live logs from Supabase...</p>
       </div>
     </div>
   </div>
-  <!-- ======================================================= -->
 
-
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}")
-        .then(() => console.log("Service Worker Registered Success!"));
-    });
-  }
 </script>
 
 </body>
