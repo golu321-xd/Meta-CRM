@@ -71,7 +71,7 @@ window.addEventListener('load', () => {
         /* ==========================================================
        STATE
     ========================================================== */
-    const API_BASE_URL = "https://meta-crm.onrender.com/api";
+    const API_BASE_URL = "https://meta-crm-woad.vercel.app";
     let users = {}; 
     let allLeads = []; // Ab data cloud se aayega
     let currentUser = localStorage.getItem('activeSessionUser') || null;
