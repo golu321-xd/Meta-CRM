@@ -33,31 +33,11 @@ def ping():
 def serve_frontend():
     return render_template('Meta.html')
 
-# ----------------------------------------------------
-# 2. SELF-PING MECHANISM
-# ----------------------------------------------------
-def keep_awake():
-    while True:
-        time.sleep(600)  # Har 10 minute (600 seconds) me loop chalega
-        try:
-            # Agar Render URL mil jaye toh usko ping karega, warna localhost ko
-            render_url = os.environ.get("RENDER_EXTERNAL_URL", "http://127.0.0.1:10000")
-            ping_url = f"{render_url}/ping"
-            requests.get(ping_url)
-            print("Self-ping successful at:", time.ctime())
-        except Exception as e:
-            print("Self-ping failed:", e)
-
-# Background thread start karna taaki web server ruk na jaye
-threading.Thread(target=keep_awake, daemon=True).start()
-
-# Render par gunicorn handle karega, isliye app.run() hata diya hai.
-
 
 # ----------------------------------------------------
 # 3. AUTHENTICATION (Login & Register)
 # ----------------------------------------------------
-@app.route('/api/register', methods=['POST'])
+@app.route('/register', methods=['POST'])
 def register():
     data = request.json
     username = data.get('username')
@@ -81,7 +61,7 @@ def register():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
     data = request.json
     input_val = data.get('username') # HTML yahan username ya ID kuch bhi bhej sakta hai
@@ -101,7 +81,7 @@ def login():
 # ----------------------------------------------------
 # 4. MANAGE LEADS (Add & Fetch)
 # ----------------------------------------------------
-@app.route('/api/leads', methods=['GET', 'POST'])
+@app.route('/leads', methods=['GET', 'POST'])
 def manage_leads():
     if request.method == 'GET':
         # Database se leads fetch karna
@@ -129,7 +109,7 @@ def manage_leads():
 # ----------------------------------------------------
 # 5. UPDATE & DELETE LEAD (Won, Lost, Edit, Delete)
 # ----------------------------------------------------
-@app.route('/api/leads/<lead_id>', methods=['PUT', 'DELETE'])
+@app.route('/leads/<lead_id>', methods=['PUT', 'DELETE'])
 def update_delete_lead(lead_id):
     if request.method == 'PUT':
         # Lead ko Edit, Won, ya Lost mark karna
@@ -151,7 +131,7 @@ def update_delete_lead(lead_id):
 # ----------------------------------------------------
 # 6. GET ALL USERS (Sirf Admin Ke Liye)
 # ----------------------------------------------------
-@app.route('/api/users', methods=['GET'])
+@app.route('/users', methods=['GET'])
 def get_users():
     owner = request.args.get('owner')
     # अगर लॉगिन करने वाला यूजर 'admin' नहीं है, तो उसे डेटा मत दो
@@ -168,7 +148,7 @@ def get_users():
 # ----------------------------------------------------
 # 7. GET OFFERS (For Ray-Ban Meta Catalog)
 # ----------------------------------------------------
-@app.route('/api/offers', methods=['GET'])
+@app.route('/offers', methods=['GET'])
 def get_offers():
     try:
         # Supabase से id के हिसाब से लाइन से डेटा मँगवाओ
@@ -180,7 +160,7 @@ def get_offers():
 # ----------------------------------------------------
 # 8. GET GLOBAL BANNER (For Offers Header)
 # ----------------------------------------------------
-@app.route('/api/global-banner', methods=['GET'])
+@app.route('/global-banner', methods=['GET'])
 def get_global_banner():
     try:
         response = supabase.table('global_banners').select('*').eq('id', 1).execute()
@@ -191,7 +171,7 @@ def get_global_banner():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/reset-password', methods=['POST', 'OPTIONS'])
+@app.route('/reset-password', methods=['POST', 'OPTIONS'])
 def reset_password():
     # CORS Error से बचने के लिए OPTIONS request को पास करना
     if request.method == 'OPTIONS':
@@ -220,7 +200,7 @@ def reset_password():
 # ==========================================
 # 🚀 API TO SEND ENV VARIABLES TO FRONTEND
 # ==========================================
-@app.route('/api/get-env', methods=['GET'])
+@app.route('/get-env', methods=['GET'])
 def get_env():
     return jsonify({
         "url": os.environ.get("SUPABASE_URL"),
